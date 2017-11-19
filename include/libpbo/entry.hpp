@@ -1,5 +1,5 @@
-#ifndef ENTRY_HPP_INCLUDED
-#define ENTRY_HPP_INCLUDED
+#ifndef ENTRY_HPP
+#define ENTRY_HPP
 
 #include <string>
 #include <fstream>
@@ -8,9 +8,9 @@
 #include "ProductEntry.hpp"
 
 #define PACKINGMETHOD_UNCOMPRESSED	0x0
-#define PACKINGMETHOD_PACKED				0x43707273
+#define PACKINGMETHOD_PACKED		0x43707273
 #define PACKINGMETHOD_PRODUCTENTRY	0x56657273
-#define PACKINGMETHOD_NULL					-0x1
+#define PACKINGMETHOD_NULL		-0x1
 
 namespace PBO
 {

@@ -2,10 +2,11 @@
 #include <cerrno>
 #include <iostream>
 #include <libpbo/PBO.hpp>
+#include <cstdlib>
 
 namespace filesystem = std::experimental::filesystem;
 
-int exitCode = 0;
+int exitCode = EXIT_SUCCESS;
 std::string directoryPath;
 std::string filePath;
 std::string productName;
@@ -105,7 +106,7 @@ int main(int argc, char **argv)
 	catch(std::exception const &e)
 	{
 		std::cerr << "pbopack : " << e.what() << std::endl;
-		exitCode = -1;
+		exitCode = EXIT_FAILURE;
 	}
 
 	delete pbo;

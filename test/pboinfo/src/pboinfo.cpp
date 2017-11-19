@@ -2,8 +2,9 @@
 #include <ctime>
 #include <libpbo/PBO.hpp>
 #include <libpbo/ProductEntry.hpp>
+#include <cstdlib>
 
-int exitCode = 0;
+int exitCode = EXIT_SUCCESS;
 PBO::PBO *pbo = NULL;
 std::string filePath;
 void usage();
@@ -92,7 +93,7 @@ int main(int argc, char **argv)
 	catch(std::exception const &e)
 	{
 		std::cerr << "pboinfo: " << e.what() << std::endl;
-		exitCode = -1;
+		exitCode = EXIT_FAILURE;
 	}
 
 	delete pbo;

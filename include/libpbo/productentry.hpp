@@ -1,5 +1,5 @@
-#ifndef PRODUCTENTRY_HPP_INCLUDED
-#define PRODUCTENTRY_HPP_INCLUDED
+#ifndef PRODUCTENTRY_HPP
+#define PRODUCTENTRY_HPP
 
 #include <vector>
 #include <string>
