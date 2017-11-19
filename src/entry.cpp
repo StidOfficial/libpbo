@@ -1,4 +1,4 @@
-#include "Entry.hpp"
+#include "entry.hpp"
 
 #include <experimental/filesystem>
 
