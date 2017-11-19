@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ctime>
-#include <libpbo/PBO.hpp>
-#include <libpbo/ProductEntry.hpp>
+#include <libpbo/pbo.hpp>
+#include <libpbo/productentry.hpp>
 #include <cstdlib>
 
 int exitCode = EXIT_SUCCESS;

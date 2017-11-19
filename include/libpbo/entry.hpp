@@ -5,7 +5,7 @@
 #include <fstream>
 #include <ctime>
 
-#include "ProductEntry.hpp"
+#include "productentry.hpp"
 
 #define PACKINGMETHOD_UNCOMPRESSED	0x0
 #define PACKINGMETHOD_PACKED		0x43707273

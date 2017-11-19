@@ -5,7 +5,7 @@
 #include <vector>
 #include <fstream>
 
-#include "Entry.hpp"
+#include "entry.hpp"
 
 namespace PBO
 {
