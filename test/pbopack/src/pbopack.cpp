@@ -1,7 +1,7 @@
 #include <experimental/filesystem>
 #include <cerrno>
 #include <iostream>
-#include <libpbo/PBO.hpp>
+#include <libpbo/pbo.hpp>
 #include <cstdlib>
 
 namespace filesystem = std::experimental::filesystem;
