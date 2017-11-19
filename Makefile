@@ -30,10 +30,10 @@ test: bin bin/pboinfo bin/pbopack
 bin:
 	@$(MKDIR) -p ${CURDIR}/bin
 
-bin/pboinfo:
+bin/pboinfo: bin/libpbo.so
 	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pboinfo/src/pboinfo.cpp -o bin/pboinfo
 
-bin/pbopack:
+bin/pbopack: bin/libpbo.so
 	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pbopack/src/pbopack.cpp -o bin/pbopack
 
 clean:
