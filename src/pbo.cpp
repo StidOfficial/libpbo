@@ -6,6 +6,7 @@
 #include <experimental/filesystem>
 
 #define PACKING_BUFFER 4096
+#define HEADER_ENTRY_DEFAULT_SIZE 21
 
 namespace filesystem = std::experimental::filesystem;
 namespace PBO
@@ -113,7 +114,7 @@ namespace PBO
 			}
 		}
 
-		char zeroEntry[21] = {0};
+		char zeroEntry[HEADER_ENTRY_DEFAULT_SIZE] = {0};
 		this->pboFile.write(zeroEntry, sizeof(zeroEntry));
 
 		char entryFileBuffer[PACKING_BUFFER];
@@ -164,7 +165,7 @@ namespace PBO
 
 		while(!this->pboFile.eof())
 		{
-			if(((int)this->pboFile.tellg() + 21) > fileLength)
+			if(((int)this->pboFile.tellg() + HEADER_ENTRY_DEFAULT_SIZE) > fileLength)
 				throw std::logic_error("Header entry is too small");
 
 			Entry *entry = new Entry();
@@ -252,6 +253,10 @@ namespace PBO
 			entry->setDataOffset(sDataOffset);
 
 			sDataOffset = sDataOffset + entry->getDataSize();
+		}
+
+		if((fileLength - sDataOffset) == HEADER_ENTRY_DEFAULT_SIZE)
+		{
 		}
 
 		if(sDataOffset > fileLength)
