@@ -9,7 +9,7 @@ yum install gcc-c++ make libstdc++
 
 apt-get :
 ```
-apt-get install build-essencials make libstdc++6
+apt-get install build-essential make libstdc++6
 ```
 
 ## Build
