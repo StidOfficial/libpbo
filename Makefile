@@ -31,7 +31,7 @@ bin:
 	@$(MKDIR) -p ${CURDIR}/bin
 
 bin/pboinfo:
-	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pboinfo/src/pbopack.cpp -o bin/pboinfo
+	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pboinfo/src/pboinfo.cpp -o bin/pboinfo
 
 bin/pbopack:
 	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pbopack/src/pbopack.cpp -o bin/pbopack
