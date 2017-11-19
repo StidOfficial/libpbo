@@ -3,7 +3,6 @@ LDFLAGS=-shared
 CPPFLAGS=-Wall -Wextra -Werror -g -fPIC
 RM=rm
 MKDIR=mkdir
-CURDIR:=${CURDIR}
 INCLUDEDIR=$(CURDIR)/include
 OBJDIR=$(CURDIR)/obj
 SRCDIR=$(CURDIR)/src
@@ -11,10 +10,9 @@ SRCFILES=$(shell find $(SRCDIR) -name "*.cpp")
 OBJFILES=$(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCFILES))
 VERSION=0.0.1
 
-all: bin/libpbo.so
+all: bin bin/libpbo.so
 
 bin/libpbo.so: $(OBJFILES)
-	@$(MKDIR) -p $CURDIR/bin
 	$(CC) $(LDFLAGS) $^ -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
@@ -30,7 +28,7 @@ install: bin/libpbo.so
 test: bin bin/pboinfo bin/pbopack
 
 bin:
-	@$(MKDIR) -p $CURDIR/bin
+	@$(MKDIR) -p ${CURDIR}/bin
 
 bin/pboinfo:
 	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pboinfo/src/pbopack.cpp -o bin/pboinfo
