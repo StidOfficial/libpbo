@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <cstdint>
 
 #include "productentry.hpp"
 
@@ -23,15 +24,15 @@ namespace PBO
 		std::string getFilePath();
 		void setPath(std::string path);
 		std::string getPath();
-		void setPackingMethod(unsigned long packingMethod);
-		unsigned long getPackingMethod();
-		void setOriginalSize(unsigned long originalSize);
-		unsigned long getOriginalSize();
-		void setReserved(unsigned long reserved);
-		unsigned long getReserved();
-		void setTimestamp(unsigned long timeStamp);
-		unsigned long getTimestamp();
-		void setDataSize(unsigned long dataSize);
+		void setPackingMethod(uint32_t packingMethod);
+		uint32_t getPackingMethod();
+		void setOriginalSize(uint32_t originalSize);
+		uint32_t getOriginalSize();
+		void setReserved(uint32_t reserved);
+		uint32_t getReserved();
+		void setTimestamp(uint32_t timeStamp);
+		uint32_t getTimestamp();
+		void setDataSize(uint32_t dataSize);
 		int getDataSize();
 		void setDataOffset(int dataPos);
 		int getDataOffset();
@@ -42,11 +43,11 @@ namespace PBO
 	private:
 		std::string filePath;
 		std::string path;
-		unsigned long packingMethod;
-		unsigned long originalSize;
-		unsigned long reserved;
-		unsigned long timestamp;
-		unsigned long dataSize;
+		uint32_t packingMethod;
+		uint32_t originalSize;
+		uint32_t reserved;
+		uint32_t timestamp;
+		uint32_t dataSize;
 		int dataOffset;
 		ProductEntry *productEntry;
 	};

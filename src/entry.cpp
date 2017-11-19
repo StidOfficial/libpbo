@@ -23,7 +23,7 @@ namespace PBO
 		this->setDataSize(std::experimental::filesystem::file_size(fsPath));
 		std::experimental::filesystem::file_time_type lastWriteTime = std::experimental::filesystem::last_write_time(fsPath);
 		std::time_t entryTime = decltype(lastWriteTime)::clock::to_time_t(lastWriteTime);
-		this->setTimestamp((unsigned long)entryTime);
+		this->setTimestamp((uint32_t)entryTime);
 	}
 
 	std::string Entry::getFilePath()
@@ -41,49 +41,49 @@ namespace PBO
 		return path;
 	}
 
-	void Entry::setPackingMethod(unsigned long packingMethod)
+	void Entry::setPackingMethod(uint32_t packingMethod)
 	{
 		this->packingMethod = packingMethod;
 		if(!this->productEntry && packingMethod == PACKINGMETHOD_PRODUCTENTRY)
 			this->productEntry = new ProductEntry();
 	}
 
-	unsigned long Entry::getPackingMethod()
+	uint32_t Entry::getPackingMethod()
 	{
 		return packingMethod;
 	}
 
-	void Entry::setOriginalSize(unsigned long originalSize)
+	void Entry::setOriginalSize(uint32_t originalSize)
 	{
 		this->originalSize = originalSize;
 	}
 
-	unsigned long Entry::getOriginalSize()
+	uint32_t Entry::getOriginalSize()
 	{
 		return originalSize;
 	}
 
-	void Entry::setReserved(unsigned long reserved)
+	void Entry::setReserved(uint32_t reserved)
 	{
 		this->reserved = reserved;
 	}
 
-	unsigned long Entry::getReserved()
+	uint32_t Entry::getReserved()
 	{
 		return reserved;
 	}
 
-	void Entry::setTimestamp(unsigned long timestamp)
+	void Entry::setTimestamp(uint32_t timestamp)
 	{
 		this->timestamp = timestamp;
 	}
 
-	unsigned long Entry::getTimestamp()
+	uint32_t Entry::getTimestamp()
 	{
 		return this->timestamp;
 	}
 
-	void Entry::setDataSize(unsigned long dataSize)
+	void Entry::setDataSize(uint32_t dataSize)
 	{
 		this->dataSize = dataSize;
 	}
