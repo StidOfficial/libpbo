@@ -1,4 +1,5 @@
 #include <experimental/filesystem>
+#include <cstring>
 #include <cerrno>
 #include <iostream>
 #include <libpbo/pbo.hpp>
@@ -60,12 +61,6 @@ int main(int argc, char **argv)
 	if(!filesystem::is_directory(directoryPath))
 	{
 		std::cerr << "pbopack: " << directoryPath << ": " << std::strerror(ENOTDIR) << std::endl;
-		return -1;
-	}
-
-	if(filesystem::is_directory(filePath))
-	{
-		std::cerr << "pbopack: " << filePath << ": " << std::strerror(EISDIR) << std::endl;
 		return -1;
 	}
 

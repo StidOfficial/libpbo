@@ -1,10 +1,13 @@
 #include "pbo.hpp"
 
 #include <iostream>
+#include <cstring>
+#include <cerrno>
 #include <experimental/filesystem>
 
 #define PACKING_BUFFER 4096
 
+namespace filesystem = std::experimental::filesystem;
 namespace PBO
 {
 	PBO::PBO(const std::string filePath) : pboFile()
@@ -35,6 +38,9 @@ namespace PBO
 
 	void PBO::pack()
 	{
+		if(filesystem::is_directory(this->pboFilePath))
+			throw std::logic_error(std::strerror(EISDIR));
+	
 		this->pboFile.open(this->pboFilePath, std::ofstream::out | std::ofstream::binary);
 		if(!this->pboFile.is_open())
 			throw std::logic_error(std::strerror(errno));
@@ -140,6 +146,9 @@ namespace PBO
 
 	void PBO::unpack()
 	{
+		if(filesystem::is_directory(this->pboFilePath))
+			throw std::logic_error(std::strerror(EISDIR));
+	
 		this->pboFile.open(this->pboFilePath, std::fstream::in | std::fstream::binary);
 		if(!this->pboFile.is_open())
 			throw std::logic_error(std::strerror(errno));

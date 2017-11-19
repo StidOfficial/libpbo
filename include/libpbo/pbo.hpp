@@ -1,7 +1,6 @@
 #ifndef PBO_HPP
 #define PBO_HPP
 
-#include <cstring>
 #include <vector>
 #include <fstream>
 
