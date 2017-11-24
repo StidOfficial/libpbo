@@ -292,14 +292,14 @@ namespace PBO
 				throw std::logic_error("No zero entry found");
 		}
 
-		int sDataOffset = this->pboFile.tellg();
+		int dataOffset = this->pboFile.tellg();
 		int leftDataLength;
 		for(int i = 0; i < getEntriesSize(); i++)
 		{
 			Entry *entry = this->getEntry(i);
-			entry->setDataOffset(sDataOffset);
+			entry->setDataOffset(dataOffset);
 
-			sDataOffset = sDataOffset + entry->getDataSize();
+			dataOffset = dataOffset + entry->getDataSize();
 			leftDataLength = entry->getDataSize();
 
 			char signatureData[SIGNATURE_BUFFER];
@@ -320,7 +320,7 @@ namespace PBO
 			}
 		}
 
-		if((fileLength - sDataOffset) == HEADER_ENTRY_DEFAULT_SIZE)
+		if((fileLength - dataOffset) == HEADER_ENTRY_DEFAULT_SIZE)
 		{
 			this->pboFile.get();
 
@@ -345,7 +345,7 @@ namespace PBO
 		else
 			throw std::logic_error("Signature not found");
 
-		if(sDataOffset > fileLength)
+		if(dataOffset > fileLength)
 			throw std::logic_error("Is too small");
 	}
 
