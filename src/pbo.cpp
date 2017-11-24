@@ -5,8 +5,8 @@
 #include <cerrno>
 #include <experimental/filesystem>
 
-#define PACKING_BUFFER 4096
-#define SIGNATURE_BUFFER 1024
+#define PACKING_BUFFER_SIZE 4096
+#define SIGNATURE_BUFFER_SIZE 1024
 #define HEADER_ENTRY_DEFAULT_SIZE 21
 
 namespace filesystem = std::experimental::filesystem;
@@ -144,7 +144,7 @@ namespace PBO
 		this->pboFile.write(zeroEntry, sizeof(zeroEntry));
 		SHA1_Update(&this->signatureContext, zeroEntry, sizeof(zeroEntry));
 
-		char entryFileBuffer[PACKING_BUFFER];
+		char entryFileBuffer[PACKING_BUFFER_SIZE];
 		for(int i = 0; i < this->getEntriesSize(); i++)
 		{
 			Entry *entry = this->entries[i];
@@ -302,13 +302,13 @@ namespace PBO
 			dataOffset = dataOffset + entry->getDataSize();
 			leftDataLength = entry->getDataSize();
 
-			char signatureData[SIGNATURE_BUFFER];
+			char signatureData[SIGNATURE_BUFFER_SIZE];
 			while(leftDataLength > 0)
 			{
-				if(leftDataLength > SIGNATURE_BUFFER)
+				if(leftDataLength > SIGNATURE_BUFFER_SIZE)
 				{
-					this->pboFile.read(signatureData, SIGNATURE_BUFFER);
-					SHA1_Update(&this->signatureContext, &signatureData, SIGNATURE_BUFFER);
+					this->pboFile.read(signatureData, SIGNATURE_BUFFER_SIZE);
+					SHA1_Update(&this->signatureContext, &signatureData, SIGNATURE_BUFFER_SIZE);
 				}
 				else
 				{
@@ -316,7 +316,7 @@ namespace PBO
 					SHA1_Update(&this->signatureContext, &signatureData, leftDataLength);
 				}
 
-				leftDataLength = leftDataLength - SIGNATURE_BUFFER;
+				leftDataLength = leftDataLength - SIGNATURE_BUFFER_SIZE;
 			}
 		}
 
