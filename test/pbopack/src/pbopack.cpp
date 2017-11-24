@@ -25,15 +25,15 @@ int main(int argc, char **argv)
 			usage();
 			return 0;
 		}
-		else if(arg.find("--name=", 0) != std::string::npos)
+		else if(arg.find("--name=", 0) == 0)
 		{
 			std::cout << arg.substr(7) << std::endl;
 		}
-		else if(arg.find("--version=", 0) != std::string::npos)
+		else if(arg.find("--version=", 0) == 0)
 		{
 			std::cout << arg.substr(10) << std::endl;
 		}
-		else if(arg.find("--", 0) != std::string::npos || arg.find("-", 0) != std::string::npos)
+		else if(arg.find("--", 0, 2) == 0 || arg.find("-", 0, 1) == 0)
 		{
 			std::cerr << "pbopack: invalid option « " << arg << " »" << std::endl;
 		}
