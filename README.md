@@ -4,12 +4,12 @@ Library for manage PBO file of Bohemia Interactive.
 ## Prerequisites
 yum :
 ```
-yum install gcc-c++ make libstdc++
+yum install gcc-c++ make libstdc++ libssl-dev
 ```
 
 apt-get :
 ```
-apt-get install build-essential make libstdc++6
+apt-get install build-essential make libstdc++6 libssl-dev
 ```
 
 ## Build

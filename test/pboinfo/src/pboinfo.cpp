@@ -90,6 +90,8 @@ int main(int argc, char **argv)
 
 			std::cout << std::endl;
 		}
+
+		std::cout << "Signature: " << pbo->getSignature() << std::endl;
 	}
 	catch(std::exception const &e)
 	{
