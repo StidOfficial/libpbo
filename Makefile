@@ -1,5 +1,5 @@
 CC=g++
-LDFLAGS=-shared
+LDFLAGS=-shared -lcrypto -lstdc++fs
 CPPFLAGS=-Wall -Wextra -Werror -g -fPIC
 RM=rm
 MKDIR=mkdir
@@ -31,10 +31,10 @@ bin:
 	@$(MKDIR) -p ${CURDIR}/bin
 
 bin/pboinfo: bin/libpbo.so
-	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lcrypto -lstdc++fs test/pboinfo/src/pboinfo.cpp -o bin/pboinfo
+	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pboinfo/src/pboinfo.cpp -o bin/pboinfo
 
 bin/pbopack: bin/libpbo.so
-	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lcrypto -lstdc++fs test/pbopack/src/pbopack.cpp -o bin/pbopack
+	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pbopack/src/pbopack.cpp -o bin/pbopack
 
 clean:
 	$(RM) -rf obj/* bin/* libpbo.so pboinfo pbopack
