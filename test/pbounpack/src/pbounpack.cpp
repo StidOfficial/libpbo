@@ -5,14 +5,17 @@
 #include <iostream>
 #include <libpbo/pbo.hpp>
 #include <cstdlib>
+#include <fstream>
 
 namespace filesystem = std::experimental::filesystem;
 
 int exitCode = EXIT_SUCCESS;
 std::string directoryPath;
-std::string filePath;
+std::string pbofilepath;
 std::string productName;
 std::string productVersion;
+
+namespace filesystem = std::experimental::filesystem;
 
 void usage();
 
@@ -26,32 +29,57 @@ int main(int argc, char **argv)
 			usage();
 			return 0;
 		}
-		else if(arg.find("--version=", 0) == 0)
-		{
-			std::cout << arg.substr(10) << std::endl;
-		}
 		else if(arg.find("--", 0, 2) == 0 || arg.find("-", 0, 1) == 0)
 		{
 			std::cerr << "pbounpack: invalid option « " << arg << " »" << std::endl;
 		}
 		else
 		{
-			if(filePath.empty())
-				filePath = arg;
+            if(pbofilepath.empty())
+                pbofilepath = arg;
 		}
 	}
 
-	if(filePath.empty())
+    if(pbofilepath.empty())
 	{
 		usage();
 		return 0;
 	}
 
-	auto pbo = std::make_unique<PBO::PBO>(filePath);
+    auto pbo = std::make_unique<PBO::PBO>(pbofilepath);
 
 	try
 	{
 		pbo->unpack();
+        int entrycount = pbo->getEntriesSize();
+        for(int idx(0); idx<entrycount; idx++) {
+            auto entry = pbo->getEntry(idx);
+            auto size = entry->getDataSize();
+            auto offset = entry->getDataOffset();
+            if(size>0) {
+                std::vector<char> tempstorage(size);
+                std::ifstream input(pbofilepath, std::ios_base::binary);
+                auto outfilename = entry->getPath();
+                for(auto &character : outfilename) {
+                    if(character == '\\') {
+                        character = '/';
+                    }
+                }
+                if(!outfilename.empty()) {
+                    auto fullpath = filesystem::path(outfilename);
+                    auto filepath = fullpath.parent_path();
+                    if(!filepath.empty() &&  !filesystem::exists(filepath)) {
+                        std::cout << "Creating " << filepath << "\n";
+                        filesystem::create_directories(filepath);
+                    }
+                    std::cout << "Writing file " << outfilename << "\n";
+                    std::ofstream out(outfilename.c_str(), std::ios_base::binary);
+                    input.seekg(offset);
+                    input.read(tempstorage.data(), size);
+                    out.write(tempstorage.data(), size);
+                }
+            }
+        }
 	}
 	catch(std::exception const &e)
 	{
@@ -64,8 +92,5 @@ int main(int argc, char **argv)
 
 void usage()
 {
-	std::cout << "Usage: pbounpack [DIRECTORY] [FILE]" << std::endl;
-	std::cout << "Arguments :" << std::endl;
-	std::cout << "\t--name<NAME>\t\tSet product name" << std::endl;
-	std::cout << "\t--version<VERSION>\tSet product version" << std::endl;
+    std::cout << "Usage: pbounpack [FILE]" << std::endl;
 }
