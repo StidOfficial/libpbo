@@ -25,7 +25,7 @@ install: bin/libpbo.so
 	@ln -sf /usr/lib/libpbo.so.$(VERSION) /usr/lib/libpbo.so.$(firstword $(subst ., ,$(VERSION)))
 	@ldconfig -n /usr/lib/
 
-test: bin bin/pboinfo bin/pbopack
+test: bin bin/pboinfo bin/pbopack bin/pbounpack
 
 bin:
 	@$(MKDIR) -p ${CURDIR}/bin
@@ -36,8 +36,11 @@ bin/pboinfo: bin/libpbo.so
 bin/pbopack: bin/libpbo.so
 	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pbopack/src/pbopack.cpp -o bin/pbopack
 
+bin/pbounpack: bin/libpbo.so
+	$(CC) -I$(INCLUDEDIR) -Lbin/ -lpbo -lstdc++fs test/pbounpack/src/pbounpack.cpp -o bin/pbounpack
+
 clean:
-	$(RM) -rf obj/* bin/* libpbo.so pboinfo pbopack
+	$(RM) -rf obj/* bin/* libpbo.so pboinfo pbopack pbounpack
 
 mrproper: clean
 	$(RM) libpbo.so
