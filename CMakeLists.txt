@@ -4,6 +4,8 @@ project(libPBO VERSION 0.0.1)
 
 find_package(OpenSSL REQUIRED)
 
+set(EXECUTABLE_OUTPUT_PATH bin/)
+set(LIBRARY_OUTPUT_PATH bin/)
 set(LIBPBO_SRCS
     src/entry.cpp
     src/pbo.cpp
