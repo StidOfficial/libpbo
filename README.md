@@ -13,13 +13,12 @@ apt-get install build-essential make cmake libstdc++6 libssl-dev
 ```
 
 ## Build
-### Build library
 ```
 cmake CMakeLists.txt
 make
 ```
 
-## Installing
+## Install
 ```
 make install
 ```
