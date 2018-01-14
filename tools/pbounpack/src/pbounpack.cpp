@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 		if(arg == "-h" || arg == "--help")
 		{
 			usage();
-			return 0;
+			return EXIT_SUCCESS;
 		}
 		else if(arg.find("--", 0, 2) == 0 || arg.find("-", 0, 1) == 0)
 			std::cerr << "pbounpack: invalid option « " << arg << " »" << std::endl;

@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 		if(arg == "-h" || arg == "--help")
 		{
 			usage();
-			return 0;
+			return EXIT_SUCCESS;
 		}
 		else if(arg.find("--name=", 0) == 0)
 		{
@@ -49,19 +49,19 @@ int main(int argc, char **argv)
 	if(directory_path.empty() || file_path.empty())
 	{
 		usage();
-		return 0;
+		return EXIT_SUCCESS;
 	}
 
 	if(!filesystem::exists(directory_path))
 	{
 		std::cerr << "pbopack: " << directory_path << ": " << std::strerror(ENOENT) << std::endl;
-		return -1;
+		return EXIT_FAILURE;
 	}
 
 	if(!filesystem::is_directory(directory_path))
 	{
 		std::cerr << "pbopack: " << directory_path << ": " << std::strerror(ENOTDIR) << std::endl;
-		return -1;
+		return EXIT_FAILURE;
 	}
 
 	if(product_name.empty())
@@ -81,6 +81,7 @@ int main(int argc, char **argv)
 	product->set_product_name(product_name);
 	product->set_product_version("");
 	pbo_file->add_entry(product_entry);
+
 	for(auto i = filesystem::recursive_directory_iterator(base_dir); i != filesystem::recursive_directory_iterator(); i++)
 	{
 		if(!filesystem::is_directory(i->status()))

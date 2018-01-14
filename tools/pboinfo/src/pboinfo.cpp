@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 		if(arg == "-h" || arg == "--help")
 		{
 			usage();
-			return 0;
+			return EXIT_SUCCESS;
 		}
 		else if(arg.find("-", 0, 2) != std::string::npos)
 		{
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	if(file_path.empty())
 	{
 		usage();
-		return 0;
+		return EXIT_SUCCESS;
 	}
 
 	pbo::pbo* pbo_file = new pbo::pbo(file_path);
