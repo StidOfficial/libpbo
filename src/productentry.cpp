@@ -1,61 +1,59 @@
 #include "productentry.hpp"
 
-#include <iostream>
-
-namespace PBO
+namespace pbo
 {
-	ProductEntry::ProductEntry()
+	productentry::productentry()
 	{
 	}
 
-	void ProductEntry::setEntryName(const std::string entryName)
+	void productentry::set_entry_name(std::string entry_name)
 	{
-		this->entryName = entryName;
+		this->entry_name = entry_name;
 	}
 
-	const std::string ProductEntry::getEntryName()
+	std::string productentry::get_entry_name()
 	{
-		return this->entryName;
+		return this->entry_name;
 	}
 
-	void ProductEntry::setProductName(const std::string productName)
+	void productentry::set_product_name(std::string product_name)
 	{
-		this->productName = productName;
+		this->product_name = product_name;
 	}
 
-	const std::string ProductEntry::getProductName()
+	std::string productentry::get_product_name()
 	{
-		return this->productName;
+		return this->product_name;
 	}
 
-	void ProductEntry::setProductVersion(const std::string productVersion)
+	void productentry::set_product_version(std::string product_version)
 	{
-		this->productVersion = productVersion;
+		this->product_version = product_version;
 	}
 
-	const std::string ProductEntry::getProductVersion()
+	std::string productentry::get_product_version()
 	{
-		return this->productVersion;
+		return this->product_version;
 	}
 
-	int ProductEntry::getProductDataSize()
+	int productentry::get_product_data_size()
 	{
-		return this->productData.size();
+		return this->product_data.size();
 	}
 
-	void ProductEntry::addProductData(std::string data)
+	void productentry::add_product_data(std::string data)
 	{
-		this->productData.resize(this->getProductDataSize() + 1);
-		this->productData[this->getProductDataSize() - 1] = data;
+		this->product_data.resize(this->get_product_data_size() + 1);
+		this->product_data[this->get_product_data_size() - 1] = data;
 	}
 
-	void ProductEntry::removeProductData(int index)
+	void productentry::remove_product_data(int index)
 	{
-		this->productData.erase(this->productData.begin(), this->productData.begin() + index);
+		this->product_data.erase(this->product_data.begin(), this->product_data.begin() + index);
 	}
 
-	const std::string ProductEntry::getProductData(int index)
+	std::string productentry::get_product_data(int index)
 	{
-		return this->productData[index];
+		return this->product_data[index];
 	}
 }

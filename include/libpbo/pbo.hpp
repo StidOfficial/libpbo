@@ -8,28 +8,28 @@
 
 #include "entry.hpp"
 
-namespace PBO
+namespace pbo
 {
-	class PBO
+	class pbo
 	{
 	public:
-		PBO(const std::string filePath);
-		~PBO();
+		pbo(std::string file_path);
+		~pbo();
 
-		void addEntry(Entry *entry);
-		void removeEntry(int index);
-		Entry* &getEntry(int index);
-		int getEntriesSize();
-		std::string &getSignature();
+		void add_entry(entry *entry);
+		void remove_entry(int index);
+		entry* &get_entry(int index);
+		int size();
+		std::string &signature();
 
 		void pack();
 		void unpack();
 	private:
-		SHA_CTX signatureContext;
-		std::string pboFilePath;
-		std::fstream pboFile;
-		std::string signature;
-		std::vector<Entry*> entries;
+		SHA_CTX signature_context;
+		std::string pbo_file_path;
+		std::fstream pbo_file;
+		std::string pbo_signature;
+		std::vector<entry*> entries;
 	};
 }
 

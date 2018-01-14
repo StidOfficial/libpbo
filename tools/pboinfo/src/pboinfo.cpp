@@ -5,13 +5,13 @@
 #include <libpbo/productentry.hpp>
 #include <cstdlib>
 
-int exitCode = EXIT_SUCCESS;
-PBO::PBO *pbo = NULL;
-std::string filePath;
 void usage();
 
 int main(int argc, char **argv)
 {
+	int exit_code = EXIT_SUCCESS;
+	std::string file_path;
+
 	for(int i = 1;i < argc; i++)
 	{
 		std::string arg = argv[i];
@@ -26,26 +26,26 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			filePath = arg;
+			file_path = arg;
 		}
 	}
 
-	if(filePath.empty())
+	if(file_path.empty())
 	{
 		usage();
 		return 0;
 	}
 
-	pbo = new PBO::PBO(filePath);
+	pbo::pbo* pbo_file = new pbo::pbo(file_path);
 	try
 	{
-		pbo->unpack();
+		pbo_file->unpack();
 
-		for(int i = 0; i < pbo->getEntriesSize(); i++)
+		for(int i = 0; i < pbo_file->size(); i++)
 		{
-			PBO::Entry *entry = pbo->getEntry(i);
+			pbo::entry *entry = pbo_file->get_entry(i);
 			std::cout << "Packing method: ";
-			switch(entry->getPackingMethod())
+			switch(entry->get_packing_method())
 			{
 				case PACKINGMETHOD_NULL:
 					std::cout << "Null method" << std::endl;
@@ -60,30 +60,30 @@ int main(int argc, char **argv)
 					std::cout << "Product entry" << std::endl;
 					break;
 				default:
-					std::cout << "Unknown #" << entry->getPackingMethod() << std::endl;
+					std::cout << "Unknown #" << entry->get_packing_method() << std::endl;
 			}
 
-			if(entry->isFileEntry())
+			if(entry->is_file_entry())
 			{
-				std::cout << "Entry path: " << entry->getPath() << std::endl;
-				std::cout << "Original size: " << entry->getOriginalSize() << " bytes" << std::endl;
-				std::cout << "Reserved: " << entry->getReserved() << " bytes" << std::endl;
-				std::time_t timestamp = entry->getTimestamp();
+				std::cout << "Entry path: " << entry->get_path() << std::endl;
+				std::cout << "Original size: " << entry->get_original_size() << " bytes" << std::endl;
+				std::cout << "Reserved: " << entry->get_reserved() << " bytes" << std::endl;
+				std::time_t timestamp = entry->get_timestamp();
 				std::cout << "Timestamp: " << std::ctime(&timestamp);
-				std::cout << "Data size: " << entry->getDataSize() << " bytes" << std::endl;
+				std::cout << "Data size: " << entry->get_data_size() << " bytes" << std::endl;
 			}
-			else if(entry->isProductEntry())
+			else if(entry->is_product_entry())
 			{
-				PBO::ProductEntry *productEntry = entry->getProductEntry();
-				if(productEntry)
+				pbo::productentry* product_entry = entry->get_product_entry();
+				if(product_entry)
 				{
-					std::cout << "Entry name : " << productEntry->getEntryName() << std::endl;
-					std::cout << "Product name : " << productEntry->getProductName() << std::endl;
-					std::cout << "Product version : " << productEntry->getProductVersion() << std::endl;
+					std::cout << "Entry name : " << product_entry->get_entry_name() << std::endl;
+					std::cout << "Product name : " << product_entry->get_product_name() << std::endl;
+					std::cout << "Product version : " << product_entry->get_product_version() << std::endl;
 
-					for(int i = 0; i < productEntry->getProductDataSize(); i++)
+					for(int i = 0; i < product_entry->get_product_data_size(); i++)
 					{
-						std::cout << "Product data " << i << " : " << productEntry->getProductData(i) << std::endl;
+						std::cout << "Product data " << i << " : " << product_entry->get_product_data(i) << std::endl;
 					}
 				}
 			}
@@ -91,16 +91,16 @@ int main(int argc, char **argv)
 			std::cout << std::endl;
 		}
 
-		std::cout << "Signature: " << pbo->getSignature() << std::endl;
+		std::cout << "Signature: " << pbo_file->signature() << std::endl;
 	}
 	catch(std::exception const &e)
 	{
 		std::cerr << "pboinfo: " << e.what() << std::endl;
-		exitCode = EXIT_FAILURE;
+		exit_code = EXIT_FAILURE;
 	}
 
-	delete pbo;
-	return exitCode;
+	delete pbo_file;
+	return exit_code;
 }
 
 void usage()

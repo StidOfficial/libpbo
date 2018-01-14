@@ -10,123 +10,123 @@
 #define HEADER_ENTRY_DEFAULT_SIZE 21
 
 namespace filesystem = std::experimental::filesystem;
-namespace PBO
+namespace pbo
 {
-	PBO::PBO(const std::string filePath) : pboFile()
+	pbo::pbo(std::string file_path) : pbo_file()
 	{
-		this->pboFilePath = filePath;
+		this->pbo_file_path = file_path;
 	}
 
-	void PBO::addEntry(Entry *entry)
+	void pbo::add_entry(entry *entry)
 	{
-		this->entries.resize(this->getEntriesSize() + 1);
-		this->entries[this->getEntriesSize() - 1] = entry;
+		this->entries.resize(this->size() + 1);
+		this->entries[this->size() - 1] = entry;
 	}
 
-	void PBO::removeEntry(int index)
+	void pbo::remove_entry(int index)
 	{
 		this->entries.erase(this->entries.begin(), this->entries.begin() + index);
 	}
 
-	Entry* &PBO::getEntry(int index)
+	entry* &pbo::get_entry(int index)
 	{
 		return this->entries[index];
 	}
 
-	int PBO::getEntriesSize()
+	int pbo::size()
 	{
 		return this->entries.size();
 	}
 
-	std::string &PBO::getSignature()
+	std::string &pbo::signature()
 	{
-		return this->signature;
+		return this->pbo_signature;
 	}
 
-	void PBO::pack()
+	void pbo::pack()
 	{
-		if(!SHA1_Init(&this->signatureContext))
+		if(!SHA1_Init(&this->signature_context))
 			throw std::logic_error("Failed to intialize SHA1");
 
-		if(filesystem::is_directory(this->pboFilePath))
+		if(filesystem::is_directory(this->pbo_file_path))
 			throw std::logic_error(std::strerror(EISDIR));
 
-		this->pboFile.open(this->pboFilePath, std::ofstream::out | std::ofstream::binary);
-		if(!this->pboFile.is_open())
+		this->pbo_file.open(this->pbo_file_path, std::ofstream::out | std::ofstream::binary);
+		if(!this->pbo_file.is_open())
 			throw std::logic_error(std::strerror(errno));
 
 		char uLong[4];
-		for(int i = 0; i < this->getEntriesSize(); i++)
+		for(int i = 0; i < this->size(); i++)
 		{
-			Entry *entry = this->entries[i];
-			this->pboFile.write(entry->getPath().data(), entry->getPath().length() + 1);
-			SHA1_Update(&this->signatureContext, entry->getPath().data(), entry->getPath().length() + 1);
+			entry *entry = this->entries[i];
+			this->pbo_file.write(entry->get_path().data(), entry->get_path().length() + 1);
+			SHA1_Update(&this->signature_context, entry->get_path().data(), entry->get_path().length() + 1);
 
-			uLong[0] = (int)(entry->getPackingMethod() & 0xFF);
-			uLong[1] = (int)((entry->getPackingMethod() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->getPackingMethod() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->getPackingMethod() >> 24) & 0xFF);
-			this->pboFile.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
+			uLong[0] = (int)(entry->get_packing_method() & 0xFF);
+			uLong[1] = (int)((entry->get_packing_method() >> 8) & 0xFF);
+			uLong[2] = (int)((entry->get_packing_method() >> 16) & 0xFF);
+			uLong[3] = (int)((entry->get_packing_method() >> 24) & 0xFF);
+			this->pbo_file.write(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
 
-			uLong[0] = (int)(entry->getOriginalSize() & 0xFF);
-			uLong[1] = (int)((entry->getOriginalSize() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->getOriginalSize() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->getOriginalSize() >> 24) & 0xFF);
-			this->pboFile.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
+			uLong[0] = (int)(entry->get_original_size() & 0xFF);
+			uLong[1] = (int)((entry->get_original_size() >> 8) & 0xFF);
+			uLong[2] = (int)((entry->get_original_size() >> 16) & 0xFF);
+			uLong[3] = (int)((entry->get_original_size() >> 24) & 0xFF);
+			this->pbo_file.write(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
 
-			uLong[0] = (int)(entry->getReserved() & 0xFF);
-			uLong[1] = (int)((entry->getReserved() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->getReserved() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->getReserved() >> 24) & 0xFF);
-			this->pboFile.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
+			uLong[0] = (int)(entry->get_reserved() & 0xFF);
+			uLong[1] = (int)((entry->get_reserved() >> 8) & 0xFF);
+			uLong[2] = (int)((entry->get_reserved() >> 16) & 0xFF);
+			uLong[3] = (int)((entry->get_reserved() >> 24) & 0xFF);
+			this->pbo_file.write(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
 
-			uLong[0] = (int)(entry->getTimestamp() & 0xFF);
-			uLong[1] = (int)((entry->getTimestamp() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->getTimestamp() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->getTimestamp() >> 24) & 0xFF);
-			this->pboFile.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
+			uLong[0] = (int)(entry->get_timestamp() & 0xFF);
+			uLong[1] = (int)((entry->get_timestamp() >> 8) & 0xFF);
+			uLong[2] = (int)((entry->get_timestamp() >> 16) & 0xFF);
+			uLong[3] = (int)((entry->get_timestamp() >> 24) & 0xFF);
+			this->pbo_file.write(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
 
-			uLong[0] = (int)(entry->getDataSize() & 0xFF);
-			uLong[1] = (int)((entry->getDataSize() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->getDataSize() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->getDataSize() >> 24) & 0xFF);
-			this->pboFile.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
+			uLong[0] = (int)(entry->get_data_size() & 0xFF);
+			uLong[1] = (int)((entry->get_data_size() >> 8) & 0xFF);
+			uLong[2] = (int)((entry->get_data_size() >> 16) & 0xFF);
+			uLong[3] = (int)((entry->get_data_size() >> 24) & 0xFF);
+			this->pbo_file.write(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
 			
-			switch(entry->getPackingMethod())
+			switch(entry->get_packing_method())
 			{
 				case PACKINGMETHOD_PRODUCTENTRY:
 				{
-					ProductEntry *productEntry = entry->getProductEntry();
-					if(!productEntry->getEntryName().empty())
+					productentry *productEntry = entry->get_product_entry();
+					if(!productEntry->get_entry_name().empty())
 					{
-						this->pboFile.write(productEntry->getEntryName().data(), productEntry->getEntryName().length() + 1);
-						SHA1_Update(&this->signatureContext, productEntry->getEntryName().data(), productEntry->getEntryName().length() + 1);
+						this->pbo_file.write(productEntry->get_entry_name().data(), productEntry->get_entry_name().length() + 1);
+						SHA1_Update(&this->signature_context, productEntry->get_entry_name().data(), productEntry->get_entry_name().length() + 1);
 					}
 
-					if(!productEntry->getProductName().empty())
+					if(!productEntry->get_product_name().empty())
 					{
-						this->pboFile.write(productEntry->getProductName().data(), productEntry->getProductName().length() + 1);
-						SHA1_Update(&this->signatureContext, productEntry->getProductName().data(), productEntry->getProductName().length() + 1);
+						this->pbo_file.write(productEntry->get_product_name().data(), productEntry->get_product_name().length() + 1);
+						SHA1_Update(&this->signature_context, productEntry->get_product_name().data(), productEntry->get_product_name().length() + 1);
 					}
 
-					if(!productEntry->getProductVersion().empty())
+					if(!productEntry->get_product_version().empty())
 					{
-						this->pboFile.write(productEntry->getProductVersion().data(), productEntry->getProductVersion().length() + 1);
-						SHA1_Update(&this->signatureContext, productEntry->getProductVersion().data(), productEntry->getProductVersion().length() + 1);
+						this->pbo_file.write(productEntry->get_product_version().data(), productEntry->get_product_version().length() + 1);
+						SHA1_Update(&this->signature_context, productEntry->get_product_version().data(), productEntry->get_product_version().length() + 1);
 					}
 
-					for(int i = 0; i < productEntry->getProductDataSize(); i++)
+					for(int i = 0; i < productEntry->get_product_data_size(); i++)
 					{
-						this->pboFile.write(productEntry->getProductData(i).c_str(), productEntry->getProductData(i).length() + 1);
-						SHA1_Update(&this->signatureContext, productEntry->getProductData(i).c_str(), productEntry->getProductData(i).length() + 1);
+						this->pbo_file.write(productEntry->get_product_data(i).c_str(), productEntry->get_product_data(i).length() + 1);
+						SHA1_Update(&this->signature_context, productEntry->get_product_data(i).c_str(), productEntry->get_product_data(i).length() + 1);
 					}
-					this->pboFile.write("\0", 1);
-					SHA1_Update(&this->signatureContext, "\0", 1);
+					this->pbo_file.write("\0", 1);
+					SHA1_Update(&this->signature_context, "\0", 1);
 					break;
 				}
 				case PACKINGMETHOD_UNCOMPRESSED:
@@ -141,27 +141,27 @@ namespace PBO
 		}
 
 		char zeroEntry[HEADER_ENTRY_DEFAULT_SIZE] = {0};
-		this->pboFile.write(zeroEntry, sizeof(zeroEntry));
-		SHA1_Update(&this->signatureContext, zeroEntry, sizeof(zeroEntry));
+		this->pbo_file.write(zeroEntry, sizeof(zeroEntry));
+		SHA1_Update(&this->signature_context, zeroEntry, sizeof(zeroEntry));
 
 		char entryFileBuffer[PACKING_BUFFER_SIZE];
-		for(int i = 0; i < this->getEntriesSize(); i++)
+		for(int i = 0; i < this->size(); i++)
 		{
-			Entry *entry = this->entries[i];
-			switch(entry->getPackingMethod())
+			entry *entry = this->entries[i];
+			switch(entry->get_packing_method())
 			{
 				case PACKINGMETHOD_UNCOMPRESSED:
 				{
 					std::ifstream entryFile;
-					entryFile.open(entry->getFilePath(), std::ifstream::in | std::ifstream::binary);
+					entryFile.open(entry->get_file_path(), std::ifstream::in | std::ifstream::binary);
 					if(!entryFile.is_open())
 						throw std::logic_error(std::strerror(errno));
 
 					while(!entryFile.eof())
 					{
 						entryFile.read(entryFileBuffer, sizeof(entryFileBuffer));
-						this->pboFile.write(entryFileBuffer, entryFile.gcount());
-						SHA1_Update(&this->signatureContext, entryFileBuffer, entryFile.gcount());
+						this->pbo_file.write(entryFileBuffer, entryFile.gcount());
+						SHA1_Update(&this->signature_context, entryFileBuffer, entryFile.gcount());
 					}
 
 					entryFile.close();
@@ -173,102 +173,102 @@ namespace PBO
 		}
 
 		char signatureDigest[SHA_DIGEST_LENGTH];
-		SHA1_Final((unsigned char*)signatureDigest, &this->signatureContext);
-		this->pboFile.write("\0", 1);
-		this->pboFile.write(signatureDigest, sizeof(signatureDigest));
+		SHA1_Final((unsigned char*)signatureDigest, &this->signature_context);
+		this->pbo_file.write("\0", 1);
+		this->pbo_file.write(signatureDigest, sizeof(signatureDigest));
 
-		this->signature.resize(SHA_DIGEST_LENGTH * 2);
+		this->pbo_signature.resize(SHA_DIGEST_LENGTH * 2);
 		for(int i = 0; i < SHA_DIGEST_LENGTH; i++)
-			sprintf(&this->signature[i * 2], "%hhx", signatureDigest[i]);
+			sprintf(&this->signature()[i * 2], "%hhx", signatureDigest[i]);
 	}
 
-	void PBO::unpack()
+	void pbo::unpack()
 	{
-		if(!SHA1_Init(&this->signatureContext))
+		if(!SHA1_Init(&this->signature_context))
 			throw std::logic_error("Failed to intialize SHA1");
 
-		if(filesystem::is_directory(this->pboFilePath))
+		if(filesystem::is_directory(this->pbo_file_path))
 			throw std::logic_error(std::strerror(EISDIR));
 
-		this->pboFile.open(this->pboFilePath, std::fstream::in | std::fstream::binary);
-		if(!this->pboFile.is_open())
+		this->pbo_file.open(this->pbo_file_path, std::fstream::in | std::fstream::binary);
+		if(!this->pbo_file.is_open())
 			throw std::logic_error(std::strerror(errno));
 
-		this->pboFile.seekg(0, this->pboFile.end);
-		int fileLength = this->pboFile.tellg();
-		this->pboFile.seekg(0, this->pboFile.beg);
+		this->pbo_file.seekg(0, this->pbo_file.end);
+		int fileLength = this->pbo_file.tellg();
+		this->pbo_file.seekg(0, this->pbo_file.beg);
 
 		std::string productEntryData;
 		std::string entryPath = "";
 		char uLong[4];
 		char byte;
-		while(!this->pboFile.eof())
+		while(!this->pbo_file.eof())
 		{
-			if(((int)this->pboFile.tellg() + HEADER_ENTRY_DEFAULT_SIZE) > fileLength)
+			if(((int)this->pbo_file.tellg() + HEADER_ENTRY_DEFAULT_SIZE) > fileLength)
 				throw std::logic_error("Header entry is too small");
 
-			Entry *entry = new Entry();
+			entry* pbo_entry = new entry();
 
 			entryPath = "";
-			while(this->pboFile.get(byte))
+			while(this->pbo_file.get(byte))
 			{
-				SHA1_Update(&this->signatureContext, &byte, sizeof(byte));
+				SHA1_Update(&this->signature_context, &byte, sizeof(byte));
 				if(byte == '\0')
 					break;
 				else
 					entryPath += byte;
 			}
 
-			entry->setPath(entryPath);
+			pbo_entry->set_path(entryPath);
 
-			this->pboFile.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
-			entry->setPackingMethod(*((unsigned int*)uLong));
+			this->pbo_file.read(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			pbo_entry->set_packing_method(*((unsigned int*)uLong));
 
-			this->pboFile.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
-			entry->setOriginalSize(*((unsigned int*)uLong));
+			this->pbo_file.read(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			pbo_entry->set_original_size(*((unsigned int*)uLong));
 
-			this->pboFile.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
-			entry->setReserved(*((unsigned int*)uLong));
+			this->pbo_file.read(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			pbo_entry->set_reserved(*((unsigned int*)uLong));
 
-			this->pboFile.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
-			entry->setTimestamp(*((unsigned int*)uLong));
+			this->pbo_file.read(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			pbo_entry->set_timestamp(*((unsigned int*)uLong));
 
-			this->pboFile.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signatureContext, uLong, sizeof(uLong));
-			entry->setDataSize(*((unsigned int*)uLong));
+			this->pbo_file.read(uLong, sizeof(uLong));
+			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			pbo_entry->set_data_size(*((unsigned int*)uLong));
 
-			if(entry->isZeroEntry())
+			if(pbo_entry->is_zero_entry())
 			{
-				delete entry;
+				delete pbo_entry;
 				break;
 			}
 			else
 			{
-				switch(entry->getPackingMethod())
+				switch(pbo_entry->get_packing_method())
 				{
 					case PACKINGMETHOD_PRODUCTENTRY:
 						productEntryData = "";
-						while(this->pboFile.get(byte))
+						while(this->pbo_file.get(byte))
 						{
-							SHA1_Update(&this->signatureContext, &byte, sizeof(byte));
+							SHA1_Update(&this->signature_context, &byte, sizeof(byte));
 							if(byte == '\0')
 								if(productEntryData.length() == 0)
 									break;
 								else
 								{
-									ProductEntry *productEntry = entry->getProductEntry();
-									if(productEntry->getEntryName().empty())
-										productEntry->setEntryName(productEntryData);
-									else if(productEntry->getProductName().empty())
-										productEntry->setProductName(productEntryData);
-									else if(productEntry->getProductVersion().empty())
-										productEntry->setProductVersion(productEntryData);
+									productentry *productEntry = pbo_entry->get_product_entry();
+									if(productEntry->get_entry_name().empty())
+										productEntry->set_entry_name(productEntryData);
+									else if(productEntry->get_product_name().empty())
+										productEntry->set_product_name(productEntryData);
+									else if(productEntry->get_product_version().empty())
+										productEntry->set_product_version(productEntryData);
 									else
-										productEntry->addProductData(productEntryData);
+										productEntry->add_product_data(productEntryData);
 									productEntryData = "";
 								}
 							else
@@ -281,39 +281,39 @@ namespace PBO
 						std::cout << "WARNING : Packed method is unavailable !" << std::endl;
 						break;
 					default:
-						std::cout << "WARNING : Unsupported packing method (" << entry->getPackingMethod() << ") !" << std::endl;
+						std::cout << "WARNING : Unsupported packing method (" << pbo_entry->get_packing_method() << ") !" << std::endl;
 						break;
 				}
 			}
 
-			this->addEntry(entry);
+			this->add_entry(pbo_entry);
 
-			if(this->pboFile.tellg() == -1)
+			if(this->pbo_file.tellg() == -1)
 				throw std::logic_error("No zero entry found");
 		}
 
-		int dataOffset = this->pboFile.tellg();
+		int dataOffset = this->pbo_file.tellg();
 		int leftDataLength;
-		for(int i = 0; i < getEntriesSize(); i++)
+		for(int i = 0; i < size(); i++)
 		{
-			Entry *entry = this->getEntry(i);
-			entry->setDataOffset(dataOffset);
+			entry* pbo_entry = this->get_entry(i);
+			pbo_entry->set_data_offset(dataOffset);
 
-			dataOffset = dataOffset + entry->getDataSize();
-			leftDataLength = entry->getDataSize();
+			dataOffset = dataOffset + pbo_entry->get_data_size();
+			leftDataLength = pbo_entry->get_data_size();
 
 			char signatureData[SIGNATURE_BUFFER_SIZE];
 			while(leftDataLength > 0)
 			{
 				if(leftDataLength > SIGNATURE_BUFFER_SIZE)
 				{
-					this->pboFile.read(signatureData, SIGNATURE_BUFFER_SIZE);
-					SHA1_Update(&this->signatureContext, &signatureData, SIGNATURE_BUFFER_SIZE);
+					this->pbo_file.read(signatureData, SIGNATURE_BUFFER_SIZE);
+					SHA1_Update(&this->signature_context, &signatureData, SIGNATURE_BUFFER_SIZE);
 				}
 				else
 				{
-					this->pboFile.read(signatureData, leftDataLength);
-					SHA1_Update(&this->signatureContext, &signatureData, leftDataLength);
+					this->pbo_file.read(signatureData, leftDataLength);
+					SHA1_Update(&this->signature_context, &signatureData, leftDataLength);
 				}
 
 				leftDataLength = leftDataLength - SIGNATURE_BUFFER_SIZE;
@@ -322,24 +322,24 @@ namespace PBO
 
 		if((fileLength - dataOffset) == HEADER_ENTRY_DEFAULT_SIZE)
 		{
-			this->pboFile.get();
+			this->pbo_file.get();
 
 			char originalSignatureDigest[SHA_DIGEST_LENGTH];
-			this->pboFile.read(originalSignatureDigest, SHA_DIGEST_LENGTH);
+			this->pbo_file.read(originalSignatureDigest, SHA_DIGEST_LENGTH);
 
-			this->signature.resize(SHA_DIGEST_LENGTH * 2);
+			this->pbo_signature.resize(SHA_DIGEST_LENGTH * 2);
 			for(int i = 0; i < SHA_DIGEST_LENGTH; i++)
-				sprintf(&this->signature[i * 2], "%hhx", originalSignatureDigest[i]);
+				sprintf(&this->signature()[i * 2], "%hhx", originalSignatureDigest[i]);
 
 			char finalSignatureDigest[SHA_DIGEST_LENGTH];
-			SHA1_Final((unsigned char*)finalSignatureDigest, &this->signatureContext);
+			SHA1_Final((unsigned char*)finalSignatureDigest, &this->signature_context);
 
 			std::string finalSignature;
 			finalSignature.resize(SHA_DIGEST_LENGTH * 2);
 			for(int i = 0; i < SHA_DIGEST_LENGTH; i++)
 				sprintf(&finalSignature[i * 2], "%hhx", finalSignatureDigest[i]);
 
-			if(this->signature != finalSignature)
+			if(this->signature() != finalSignature)
 				throw std::logic_error("Wrong file signature");
 		}
 		else
@@ -349,13 +349,13 @@ namespace PBO
 			throw std::logic_error("Is too small");
 	}
 
-	PBO::~PBO()
+	pbo::~pbo()
 	{
-		OPENSSL_cleanse(&this->signatureContext, sizeof(this->signatureContext));
+		OPENSSL_cleanse(&this->signature_context, sizeof(this->signature_context));
 
-		for(int i = 0; i < this->getEntriesSize(); i++)
+		for(int i = 0; i < this->size(); i++)
 			delete this->entries[i];
 
-		this->pboFile.close();
+		this->pbo_file.close();
 	}
 }

@@ -2,130 +2,137 @@
 
 #include <experimental/filesystem>
 
-namespace PBO
+namespace filesystem = std::experimental::filesystem;
+namespace pbo
 {
-	Entry::Entry()
+	entry::entry()
 	{
-		this->packingMethod = PACKINGMETHOD_NULL;
-		this->originalSize = 0;
+		this->packing_method = PACKINGMETHOD_NULL;
+		this->original_size = 0;
 		this->reserved = 0;
 		this->timestamp = 0;
-		this->dataSize = 0;
-		this->dataOffset = -1;
-		this->productEntry = NULL;
+		this->data_size = 0;
+		this->data_offset = -1;
+		this->product_entry = NULL;
 	}
 
-	void Entry::setFilePath(std::string filePath)
+	void entry::set_file_path(std::string file_path)
 	{
-		this->filePath = filePath;
+		this->file_path = file_path;
 
-		std::experimental::filesystem::path fsPath = filePath;
-		this->setDataSize(std::experimental::filesystem::file_size(fsPath));
-		std::experimental::filesystem::file_time_type lastWriteTime = std::experimental::filesystem::last_write_time(fsPath);
-		std::time_t entryTime = decltype(lastWriteTime)::clock::to_time_t(lastWriteTime);
-		this->setTimestamp((uint32_t)entryTime);
+		filesystem::path filesystem_path = file_path;
+		this->set_data_size(filesystem::file_size(filesystem_path));
+		filesystem::file_time_type last_write_time = filesystem::last_write_time(filesystem_path);
+		std::time_t entry_time = decltype(last_write_time)::clock::to_time_t(last_write_time);
+		this->set_timestamp((uint32_t)entry_time);
 	}
 
-	std::string Entry::getFilePath()
+	std::string entry::get_file_path()
 	{
-		return this->filePath;
+		return this->file_path;
 	}
 
-	void Entry::setPath(std::string path)
+	void entry::set_path(std::string path)
 	{
 		this->path = path;
 	}
 
-	std::string Entry::getPath()
+	std::string entry::get_path()
 	{
 		return path;
 	}
 
-	void Entry::setPackingMethod(uint32_t packingMethod)
+	void entry::set_packing_method(uint32_t packing_method)
 	{
-		this->packingMethod = packingMethod;
-		if(!this->productEntry && packingMethod == PACKINGMETHOD_PRODUCTENTRY)
-			this->productEntry = new ProductEntry();
+		this->packing_method = packing_method;
+		if(!this->product_entry && packing_method == PACKINGMETHOD_PRODUCTENTRY)
+			this->product_entry = new productentry();
 	}
 
-	uint32_t Entry::getPackingMethod()
+	uint32_t entry::get_packing_method()
 	{
-		return packingMethod;
+		return this->packing_method;
 	}
 
-	void Entry::setOriginalSize(uint32_t originalSize)
+	void entry::set_original_size(uint32_t original_size)
 	{
-		this->originalSize = originalSize;
+		this->original_size = original_size;
 	}
 
-	uint32_t Entry::getOriginalSize()
+	uint32_t entry::get_original_size()
 	{
-		return originalSize;
+		return this->original_size;
 	}
 
-	void Entry::setReserved(uint32_t reserved)
+	void entry::set_reserved(uint32_t reserved)
 	{
 		this->reserved = reserved;
 	}
 
-	uint32_t Entry::getReserved()
+	uint32_t entry::get_reserved()
 	{
-		return reserved;
+		return this->reserved;
 	}
 
-	void Entry::setTimestamp(uint32_t timestamp)
+	void entry::set_timestamp(uint32_t timestamp)
 	{
 		this->timestamp = timestamp;
 	}
 
-	uint32_t Entry::getTimestamp()
+	uint32_t entry::get_timestamp()
 	{
 		return this->timestamp;
 	}
 
-	void Entry::setDataSize(uint32_t dataSize)
+	void entry::set_data_size(uint32_t data_size)
 	{
-		this->dataSize = dataSize;
+		this->data_size = data_size;
 	}
 
-	int Entry::getDataSize()
+	int entry::get_data_size()
 	{
-		return dataSize;
+		return this->data_size;
 	}
 
-	void Entry::setDataOffset(int dataOffset)
+	void entry::set_data_offset(int data_offset)
 	{
-		this->dataOffset = dataOffset;
+		this->data_offset = data_offset;
 	}
 
-	int Entry::getDataOffset()
+	int entry::get_data_offset()
 	{
-		return this->dataOffset;
+		return this->data_offset;
 	}
 
-	ProductEntry* &Entry::getProductEntry()
+	productentry* &entry::get_product_entry()
 	{
-		return this->productEntry;
+		return this->product_entry;
 	}
 
-	bool Entry::isProductEntry()
+	bool entry::is_product_entry()
 	{
-		return getPackingMethod() == PACKINGMETHOD_PRODUCTENTRY;
+		return get_packing_method() == PACKINGMETHOD_PRODUCTENTRY;
 	}
 
-	bool Entry::isFileEntry()
+	bool entry::is_file_entry()
 	{
-		return getPackingMethod() == PACKINGMETHOD_UNCOMPRESSED || getPackingMethod() == PACKINGMETHOD_PACKED;
+		return get_packing_method() == PACKINGMETHOD_UNCOMPRESSED ||
+			get_packing_method() == PACKINGMETHOD_PACKED;
 	}
 
-	bool Entry::isZeroEntry()
+	bool entry::is_zero_entry()
 	{
-		return (path.length() == 0 && packingMethod == 0 && originalSize == 0 && reserved == 0 && timestamp == 0 && dataSize == 0);
+		return this->path.length() == 0 &&
+			this->packing_method == 0 &&
+			this->original_size == 0 &&
+			this->reserved == 0 &&
+			this->timestamp == 0 &&
+			this->data_size == 0;
 	}
 
-	Entry::~Entry()
+	entry::~entry()
 	{
-		if(this->productEntry)
-			delete this->productEntry;
+		if(this->product_entry)
+			delete this->product_entry;
 	}
 }

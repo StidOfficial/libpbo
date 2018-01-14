@@ -4,27 +4,27 @@
 #include <vector>
 #include <string>
 
-namespace PBO
+namespace pbo
 {
-	class ProductEntry
+	class productentry
 	{
 	public:
-		ProductEntry();
-		void setEntryName(const std::string entryName);
-		const std::string getEntryName();
-		void setProductName(const std::string productName);
-		const std::string getProductName();
-		void setProductVersion(const std::string productVersion);
-		const std::string getProductVersion();
-		int getProductDataSize();
-		void addProductData(std::string data);
-		void removeProductData(int index);
-		const std::string getProductData(int index);
+		productentry();
+		void set_entry_name(std::string entry_name);
+		std::string get_entry_name();
+		void set_product_name(std::string product_name);
+		std::string get_product_name();
+		void set_product_version(std::string product_version);
+		std::string get_product_version();
+		int get_product_data_size();
+		void add_product_data(std::string data);
+		void remove_product_data(int index);
+		std::string get_product_data(int index);
 	private:
-		std::string entryName;
-		std::string productName;
-		std::string productVersion;
-		std::vector<std::string> productData;
+		std::string entry_name;
+		std::string product_name;
+		std::string product_version;
+		std::vector<std::string> product_data;
 	};
 }
 

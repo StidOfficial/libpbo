@@ -7,16 +7,16 @@
 
 namespace filesystem = std::experimental::filesystem;
 
-int exitCode = EXIT_SUCCESS;
-std::string directoryPath;
-std::string filePath;
-std::string productName;
-std::string productVersion;
-
 void usage();
 
 int main(int argc, char **argv)
 {
+	int exit_code = EXIT_SUCCESS;
+	std::string directory_path;
+	std::string file_path;
+	std::string product_name;
+	std::string product_version;
+
 	for(int i = 1;i < argc; i++)
 	{
 		std::string arg = argv[i];
@@ -39,73 +39,73 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			if(directoryPath.empty())
-				directoryPath = arg;
-			else if(filePath.empty())
-				filePath = arg;
+			if(directory_path.empty())
+				directory_path = arg;
+			else if(file_path.empty())
+				file_path = arg;
 		}
 	}
 
-	if(directoryPath.empty() || filePath.empty())
+	if(directory_path.empty() || file_path.empty())
 	{
 		usage();
 		return 0;
 	}
 
-	if(!filesystem::exists(directoryPath))
+	if(!filesystem::exists(directory_path))
 	{
-		std::cerr << "pbopack: " << directoryPath << ": " << std::strerror(ENOENT) << std::endl;
+		std::cerr << "pbopack: " << directory_path << ": " << std::strerror(ENOENT) << std::endl;
 		return -1;
 	}
 
-	if(!filesystem::is_directory(directoryPath))
+	if(!filesystem::is_directory(directory_path))
 	{
-		std::cerr << "pbopack: " << directoryPath << ": " << std::strerror(ENOTDIR) << std::endl;
+		std::cerr << "pbopack: " << directory_path << ": " << std::strerror(ENOTDIR) << std::endl;
 		return -1;
 	}
 
-	if(productName.empty())
+	if(product_name.empty())
 	{
-		filesystem::path fPath = filePath;
-		productName = fPath.filename();
+		filesystem::path filesystem_path = file_path;
+		product_name = filesystem_path.filename();
 	}
 
-	filesystem::path baseDir = directoryPath + "/";
-	std::string baseDirPath = baseDir.string();
+	filesystem::path base_dir = directory_path + "/";
+	std::string base_dir_path = base_dir.string();
 
-	PBO::PBO *pbo = new PBO::PBO(filePath);
-	PBO::Entry *productEntry = new PBO::Entry();
-	productEntry->setPackingMethod(PACKINGMETHOD_PRODUCTENTRY);
-	PBO::ProductEntry *product = productEntry->getProductEntry();
-	product->setEntryName("prefix");
-	product->setProductName(productName);
-	product->setProductVersion("");
-	pbo->addEntry(productEntry);
-	for(auto i = filesystem::recursive_directory_iterator(baseDir); i != filesystem::recursive_directory_iterator(); i++)
+	pbo::pbo* pbo_file = new pbo::pbo(file_path);
+	pbo::entry *product_entry = new pbo::entry();
+	product_entry->set_packing_method(PACKINGMETHOD_PRODUCTENTRY);
+	pbo::productentry *product = product_entry->get_product_entry();
+	product->set_entry_name("prefix");
+	product->set_product_name(product_name);
+	product->set_product_version("");
+	pbo_file->add_entry(product_entry);
+	for(auto i = filesystem::recursive_directory_iterator(base_dir); i != filesystem::recursive_directory_iterator(); i++)
 	{
 		if(!filesystem::is_directory(i->status()))
 		{
-			PBO::Entry *entryFile = new PBO::Entry();
-			entryFile->setPackingMethod(PACKINGMETHOD_UNCOMPRESSED);
-			std::string entryFilePath = i->path().string();
-			entryFile->setPath(entryFilePath.substr(baseDirPath.length()));
-			entryFile->setFilePath(i->path().string());
-			pbo->addEntry(entryFile);
+			pbo::entry* file_entry = new pbo::entry();
+			file_entry->set_packing_method(PACKINGMETHOD_UNCOMPRESSED);
+			std::string entry_file_path = i->path().string();
+			file_entry->set_path(entry_file_path.substr(base_dir_path.length()));
+			file_entry->set_file_path(i->path().string());
+			pbo_file->add_entry(file_entry);
 		}
 	}
 
 	try
 	{
-		pbo->pack();
+		pbo_file->pack();
 	}
 	catch(std::exception const &e)
 	{
 		std::cerr << "pbopack : " << e.what() << std::endl;
-		exitCode = EXIT_FAILURE;
+		exit_code = EXIT_FAILURE;
 	}
 
-	delete pbo;
-	return exitCode;
+	delete pbo_file;
+	return exit_code;
 }
 
 void usage()
