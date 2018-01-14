@@ -91,7 +91,9 @@ int main(int argc, char **argv)
 			std::cout << std::endl;
 		}
 
-		std::cout << "Signature: " << pbo_file->signature() << std::endl;
+		std::cout << "PBO signature: " << pbo_file->pbo_signature() << std::endl;
+		std::cout << "File signature: " << pbo_file->file_signature() << std::endl;
+		std::cout << "Valid signature: " << ((pbo_file->pbo_signature() == pbo_file->file_signature()) ? "true" : "false") << std::endl;
 	}
 	catch(std::exception const &e)
 	{

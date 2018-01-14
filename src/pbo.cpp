@@ -38,9 +38,28 @@ namespace pbo
 		return this->entries.size();
 	}
 
-	std::string &pbo::signature()
+	void pbo::set_pbo_signature(char* signature_digest)
 	{
-		return this->pbo_signature;
+		this->pbo_checksum.resize(SHA_DIGEST_LENGTH * 2);
+		for(int i = 0; i < SHA_DIGEST_LENGTH; i++)
+			sprintf(&this->pbo_checksum[i * 2], "%hhx", signature_digest[i]);
+	}
+
+	std::string &pbo::pbo_signature()
+	{
+		return this->pbo_checksum;
+	}
+
+	void pbo::set_file_signature(char* signature_digest)
+	{
+		this->file_checksum.resize(SHA_DIGEST_LENGTH * 2);
+		for(int i = 0; i < SHA_DIGEST_LENGTH; i++)
+			sprintf(&this->file_checksum[i * 2], "%hhx", signature_digest[i]);
+	}
+
+	std::string &pbo::file_signature()
+	{
+		return this->file_checksum;
 	}
 
 	void pbo::pack()
@@ -172,14 +191,13 @@ namespace pbo
 			}
 		}
 
-		char signatureDigest[SHA_DIGEST_LENGTH];
-		SHA1_Final((unsigned char*)signatureDigest, &this->signature_context);
-		this->pbo_file.write("\0", 1);
-		this->pbo_file.write(signatureDigest, sizeof(signatureDigest));
+		char file_signature_digest[SHA_DIGEST_LENGTH];
+		SHA1_Final((unsigned char*)file_signature_digest, &this->signature_context);
+		this->set_pbo_signature(file_signature_digest);
+		this->set_file_signature(file_signature_digest);
 
-		this->pbo_signature.resize(SHA_DIGEST_LENGTH * 2);
-		for(int i = 0; i < SHA_DIGEST_LENGTH; i++)
-			sprintf(&this->signature()[i * 2], "%hhx", signatureDigest[i]);
+		this->pbo_file.write("\0", 1);
+		this->pbo_file.write(file_signature_digest, sizeof(file_signature_digest));
 	}
 
 	void pbo::unpack()
@@ -324,23 +342,15 @@ namespace pbo
 		{
 			this->pbo_file.get();
 
-			char originalSignatureDigest[SHA_DIGEST_LENGTH];
-			this->pbo_file.read(originalSignatureDigest, SHA_DIGEST_LENGTH);
+			char pbo_signature_digest[SHA_DIGEST_LENGTH];
+			this->pbo_file.read(pbo_signature_digest, SHA_DIGEST_LENGTH);
 
-			this->pbo_signature.resize(SHA_DIGEST_LENGTH * 2);
-			for(int i = 0; i < SHA_DIGEST_LENGTH; i++)
-				sprintf(&this->signature()[i * 2], "%hhx", originalSignatureDigest[i]);
+			this->set_pbo_signature(pbo_signature_digest);
 
-			char finalSignatureDigest[SHA_DIGEST_LENGTH];
-			SHA1_Final((unsigned char*)finalSignatureDigest, &this->signature_context);
+			char file_signature_digest[SHA_DIGEST_LENGTH];
+			SHA1_Final((unsigned char*)file_signature_digest, &this->signature_context);
 
-			std::string finalSignature;
-			finalSignature.resize(SHA_DIGEST_LENGTH * 2);
-			for(int i = 0; i < SHA_DIGEST_LENGTH; i++)
-				sprintf(&finalSignature[i * 2], "%hhx", finalSignatureDigest[i]);
-
-			if(this->signature() != finalSignature)
-				throw std::logic_error("Wrong file signature");
+			this->set_file_signature(file_signature_digest);
 		}
 		else
 			throw std::logic_error("Signature not found");
