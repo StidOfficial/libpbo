@@ -26,8 +26,7 @@ add_executable(pbounpack tools/pbounpack/src/pbounpack.cpp)
 
 target_include_directories(pbo PUBLIC include PRIVATE include/libpbo)
 if(MSVC)
-	include_directories(pbo ${OPENSSL_INCLUDE_DIR})
-	target_link_libraries(pbo ${OPENSSL_LIBRARIES})
+	target_link_libraries(pbo OpenSSL::Crypto)
 
 	target_link_libraries(pboinfo pbo)
 	target_link_libraries(pbopack pbo)
