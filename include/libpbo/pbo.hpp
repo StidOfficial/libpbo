@@ -20,7 +20,7 @@ namespace pbo
 		void add_entry(entry *entry);
 		void remove_entry(int index);
 		entry* &get_entry(int index);
-		int size();
+		size_t size();
 		std::string &pbo_signature();
 		std::string &file_signature();
 

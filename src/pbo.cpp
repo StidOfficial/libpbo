@@ -33,7 +33,7 @@ namespace pbo
 		return this->entries[index];
 	}
 
-	int pbo::size()
+	size_t pbo::size()
 	{
 		return this->entries.size();
 	}
@@ -75,7 +75,7 @@ namespace pbo
 			throw std::logic_error(std::strerror(errno));
 
 		char uLong[4];
-		for(int i = 0; i < this->size(); i++)
+		for(int i = 0; i < (int)this->size(); i++)
 		{
 			entry *entry = this->entries[i];
 			this->pbo_file.write(entry->get_path().data(), entry->get_path().length() + 1);
@@ -139,7 +139,7 @@ namespace pbo
 						SHA1_Update(&this->signature_context, productEntry->get_product_version().data(), productEntry->get_product_version().length() + 1);
 					}
 
-					for(int i = 0; i < productEntry->get_product_data_size(); i++)
+					for(int i = 0; i < (int)productEntry->get_product_data_size(); i++)
 					{
 						this->pbo_file.write(productEntry->get_product_data(i).c_str(), productEntry->get_product_data(i).length() + 1);
 						SHA1_Update(&this->signature_context, productEntry->get_product_data(i).c_str(), productEntry->get_product_data(i).length() + 1);
@@ -164,7 +164,7 @@ namespace pbo
 		SHA1_Update(&this->signature_context, zeroEntry, sizeof(zeroEntry));
 
 		char entryFileBuffer[PACKING_BUFFER_SIZE];
-		for(int i = 0; i < this->size(); i++)
+		for(int i = 0; i < (int)this->size(); i++)
 		{
 			entry *entry = this->entries[i];
 			switch(entry->get_packing_method())
@@ -312,7 +312,7 @@ namespace pbo
 
 		int dataOffset = (int)this->pbo_file.tellg();
 		int leftDataLength;
-		for(int i = 0; i < size(); i++)
+		for(int i = 0; i < (int)size(); i++)
 		{
 			entry* pbo_entry = this->get_entry(i);
 			pbo_entry->set_data_offset(dataOffset);
@@ -363,7 +363,7 @@ namespace pbo
 	{
 		OPENSSL_cleanse(&this->signature_context, sizeof(this->signature_context));
 
-		for(int i = 0; i < this->size(); i++)
+		for(int i = 0; i < (int)this->size(); i++)
 			delete this->entries[i];
 
 		this->pbo_file.close();

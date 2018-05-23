@@ -18,7 +18,7 @@ namespace pbo
 		std::string get_product_name();
 		void set_product_version(std::string product_version);
 		std::string get_product_version();
-		int get_product_data_size();
+		size_t get_product_data_size();
 		void add_product_data(std::string data);
 		void remove_product_data(int index);
 		std::string get_product_data(int index);

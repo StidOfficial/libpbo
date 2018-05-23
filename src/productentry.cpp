@@ -36,7 +36,7 @@ namespace pbo
 		return this->product_version;
 	}
 
-	int productentry::get_product_data_size()
+	size_t productentry::get_product_data_size()
 	{
 		return this->product_data.size();
 	}

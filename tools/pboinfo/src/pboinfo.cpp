@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 	{
 		pbo_file->unpack();
 
-		for(int i = 0; i < pbo_file->size(); i++)
+		for(int i = 0; i < (int)pbo_file->size(); i++)
 		{
 			pbo::entry *entry = pbo_file->get_entry(i);
 			std::cout << "Packing method: ";
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 					std::cout << "Product name : " << product_entry->get_product_name() << std::endl;
 					std::cout << "Product version : " << product_entry->get_product_version() << std::endl;
 
-					for(int i = 0; i < product_entry->get_product_data_size(); i++)
+					for(int i = 0; i < (int)product_entry->get_product_data_size(); i++)
 					{
 						std::cout << "Product data " << i << " : " << product_entry->get_product_data(i) << std::endl;
 					}
