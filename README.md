@@ -12,11 +12,21 @@ apt-get :
 apt-get install build-essential make cmake libstdc++6 libssl-dev
 ```
 
+Visual Studio :
+
+Download and install OpenSSL library : https://github.com/openssl/openssl
+
 ## Build
 ```
 cmake CMakeLists.txt
 make
 ```
+
+Visual Studio :
+
+Open **CMakeLists.txt** with *File* > *Open* > *CMake...*
+
+And build with *CMake* > *Build All*
 
 ## Install
 ```
