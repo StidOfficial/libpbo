@@ -9,3 +9,4 @@ pboinfo
 pbopack
 pbounpack
 /.vs
+/CMakeSettings.json

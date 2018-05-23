@@ -180,7 +180,7 @@ namespace pbo
 					{
 						entryFile.read(entryFileBuffer, sizeof(entryFileBuffer));
 						this->pbo_file.write(entryFileBuffer, entryFile.gcount());
-						SHA1_Update(&this->signature_context, entryFileBuffer, entryFile.gcount());
+						SHA1_Update(&this->signature_context, entryFileBuffer, (size_t)entryFile.gcount());
 					}
 
 					entryFile.close();
@@ -213,7 +213,7 @@ namespace pbo
 			throw std::logic_error(std::strerror(errno));
 
 		this->pbo_file.seekg(0, this->pbo_file.end);
-		int fileLength = this->pbo_file.tellg();
+		int fileLength = (int)this->pbo_file.tellg();
 		this->pbo_file.seekg(0, this->pbo_file.beg);
 
 		std::string productEntryData;
@@ -306,11 +306,11 @@ namespace pbo
 
 			this->add_entry(pbo_entry);
 
-			if(this->pbo_file.tellg() == -1)
+			if(this->pbo_file.tellg() == (std::streampos)-1)
 				throw std::logic_error("No zero entry found");
 		}
 
-		int dataOffset = this->pbo_file.tellg();
+		int dataOffset = (int)this->pbo_file.tellg();
 		int leftDataLength;
 		for(int i = 0; i < size(); i++)
 		{

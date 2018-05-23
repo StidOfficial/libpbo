@@ -21,7 +21,7 @@ namespace pbo
 		this->file_path = file_path;
 
 		filesystem::path filesystem_path = file_path;
-		this->set_data_size(filesystem::file_size(filesystem_path));
+		this->set_data_size((uint32_t)filesystem::file_size(filesystem_path));
 		filesystem::file_time_type last_write_time = filesystem::last_write_time(filesystem_path);
 		std::time_t entry_time = decltype(last_write_time)::clock::to_time_t(last_write_time);
 		this->set_timestamp((uint32_t)entry_time);

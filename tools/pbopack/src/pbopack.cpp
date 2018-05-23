@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	if(product_name.empty())
 	{
 		filesystem::path filesystem_path = file_path;
-		product_name = filesystem_path.filename();
+		product_name = filesystem_path.filename().generic_string();
 	}
 
 	filesystem::path base_dir = directory_path + "/";
