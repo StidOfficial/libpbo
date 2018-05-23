@@ -6,11 +6,12 @@
 #include <openssl/sha.h>
 #include <openssl/crypto.h>
 
+#include "pboDll.h"
 #include "entry.hpp"
 
 namespace pbo
 {
-	class pbo
+	class PBODLL_API pbo
 	{
 	public:
 		pbo(std::string file_path);

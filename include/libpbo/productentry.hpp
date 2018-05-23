@@ -4,9 +4,11 @@
 #include <vector>
 #include <string>
 
+#include "pboDll.h"
+
 namespace pbo
 {
-	class productentry
+	class PBODLL_API productentry
 	{
 	public:
 		productentry();

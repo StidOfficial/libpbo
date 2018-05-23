@@ -6,16 +6,17 @@
 #include <ctime>
 #include <cstdint>
 
+#include "pboDll.h"
 #include "productentry.hpp"
 
 #define PACKINGMETHOD_UNCOMPRESSED	0x0
 #define PACKINGMETHOD_PACKED		0x43707273
 #define PACKINGMETHOD_PRODUCTENTRY	0x56657273
-#define PACKINGMETHOD_NULL		-0x1
+#define PACKINGMETHOD_NULL			-0x1
 
 namespace pbo
 {
-	class entry
+	class PBODLL_API entry
 	{
 	public:
 		entry();
