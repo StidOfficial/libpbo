@@ -9,6 +9,20 @@
 #define SIGNATURE_BUFFER_SIZE 1024
 #define HEADER_ENTRY_DEFAULT_SIZE 21
 
+#define ULONG_WRITE(var, value) \
+	var[0] = (int)(value & 0xFF); \
+	var[1] = (int)((value >> 8) & 0xFF); \
+	var[2] = (int)((value >> 16) & 0xFF); \
+	var[3] = (int)((value >> 24) & 0xFF);
+
+#define FILE_READ(file, sign, var, size) \
+	file.read(var, size); \
+	SHA1_Update(&sign, var, size);
+
+#define FILE_WRITE(file, sign, var, size) \
+	file.write(var, size); \
+	SHA1_Update(&sign, var, size);
+
 namespace filesystem = std::experimental::filesystem;
 namespace pbo
 {
@@ -78,43 +92,22 @@ namespace pbo
 		for(int i = 0; i < (int)this->size(); i++)
 		{
 			entry *entry = this->entries[i];
-			this->pbo_file.write(entry->get_path().c_str(), entry->get_path().length() + 1);
-			SHA1_Update(&this->signature_context, entry->get_path().c_str(), entry->get_path().length() + 1);
+			FILE_WRITE(this->pbo_file, this->signature_context, entry->get_path().c_str(), entry->get_path().length() + 1);
 
-			uLong[0] = (int)(entry->get_packing_method() & 0xFF);
-			uLong[1] = (int)((entry->get_packing_method() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->get_packing_method() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->get_packing_method() >> 24) & 0xFF);
-			this->pbo_file.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			ULONG_WRITE(uLong, entry->get_packing_method());
+			FILE_WRITE(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 
-			uLong[0] = (int)(entry->get_original_size() & 0xFF);
-			uLong[1] = (int)((entry->get_original_size() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->get_original_size() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->get_original_size() >> 24) & 0xFF);
-			this->pbo_file.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			ULONG_WRITE(uLong, entry->get_original_size());
+			FILE_WRITE(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 
-			uLong[0] = (int)(entry->get_reserved() & 0xFF);
-			uLong[1] = (int)((entry->get_reserved() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->get_reserved() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->get_reserved() >> 24) & 0xFF);
-			this->pbo_file.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			ULONG_WRITE(uLong, entry->get_reserved());
+			FILE_WRITE(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 
-			uLong[0] = (int)(entry->get_timestamp() & 0xFF);
-			uLong[1] = (int)((entry->get_timestamp() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->get_timestamp() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->get_timestamp() >> 24) & 0xFF);
-			this->pbo_file.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			ULONG_WRITE(uLong, entry->get_timestamp());
+			FILE_WRITE(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 
-			uLong[0] = (int)(entry->get_data_size() & 0xFF);
-			uLong[1] = (int)((entry->get_data_size() >> 8) & 0xFF);
-			uLong[2] = (int)((entry->get_data_size() >> 16) & 0xFF);
-			uLong[3] = (int)((entry->get_data_size() >> 24) & 0xFF);
-			this->pbo_file.write(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			ULONG_WRITE(uLong, entry->get_data_size());
+			FILE_WRITE(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 
 			switch(entry->get_packing_method())
 			{
@@ -123,29 +116,25 @@ namespace pbo
 					productentry *productEntry = entry->get_product_entry();
 					if(!productEntry->get_entry_name().empty())
 					{
-						this->pbo_file.write(productEntry->get_entry_name().data(), productEntry->get_entry_name().length() + 1);
-						SHA1_Update(&this->signature_context, productEntry->get_entry_name().data(), productEntry->get_entry_name().length() + 1);
+						FILE_WRITE(this->pbo_file, this->signature_context, productEntry->get_entry_name().c_str(), productEntry->get_entry_name().length() + 1);
 					}
 
 					if(!productEntry->get_product_name().empty())
 					{
-						this->pbo_file.write(productEntry->get_product_name().data(), productEntry->get_product_name().length() + 1);
-						SHA1_Update(&this->signature_context, productEntry->get_product_name().data(), productEntry->get_product_name().length() + 1);
+						FILE_WRITE(this->pbo_file, this->signature_context, productEntry->get_product_name().c_str(), productEntry->get_product_name().length() + 1);
 					}
 
 					if(!productEntry->get_product_version().empty())
 					{
-						this->pbo_file.write(productEntry->get_product_version().data(), productEntry->get_product_version().length() + 1);
-						SHA1_Update(&this->signature_context, productEntry->get_product_version().data(), productEntry->get_product_version().length() + 1);
+						FILE_WRITE(this->pbo_file, this->signature_context, productEntry->get_product_version().c_str(), productEntry->get_product_version().length() + 1);
 					}
 
 					for(int i = 0; i < (int)productEntry->get_product_data_size(); i++)
 					{
-						this->pbo_file.write(productEntry->get_product_data(i).c_str(), productEntry->get_product_data(i).length() + 1);
-						SHA1_Update(&this->signature_context, productEntry->get_product_data(i).c_str(), productEntry->get_product_data(i).length() + 1);
+						FILE_WRITE(this->pbo_file, this->signature_context, productEntry->get_product_data(i).c_str(), productEntry->get_product_data(i).length() + 1);
 					}
-					this->pbo_file.write("\0", 1);
-					SHA1_Update(&this->signature_context, "\0", 1);
+
+					FILE_WRITE(this->pbo_file, this->signature_context, "\0", 1);
 					break;
 				}
 				case PACKINGMETHOD_UNCOMPRESSED:
@@ -161,8 +150,7 @@ namespace pbo
 		}
 
 		char zeroEntry[HEADER_ENTRY_DEFAULT_SIZE] = {0};
-		this->pbo_file.write(zeroEntry, sizeof(zeroEntry));
-		SHA1_Update(&this->signature_context, zeroEntry, sizeof(zeroEntry));
+		FILE_WRITE(this->pbo_file, this->signature_context, zeroEntry, sizeof(zeroEntry));
 
 		char entryFileBuffer[PACKING_BUFFER_SIZE];
 		for(int i = 0; i < (int)this->size(); i++)
@@ -180,8 +168,7 @@ namespace pbo
 					while(!entryFile.eof())
 					{
 						entryFile.read(entryFileBuffer, sizeof(entryFileBuffer));
-						this->pbo_file.write(entryFileBuffer, entryFile.gcount());
-						SHA1_Update(&this->signature_context, entryFileBuffer, (size_t)entryFile.gcount());
+						FILE_WRITE(this->pbo_file, this->signature_context, entryFileBuffer, (size_t)entryFile.gcount());
 					}
 
 					entryFile.close();
@@ -240,24 +227,19 @@ namespace pbo
 
 			pbo_entry->set_path(entryPath);
 
-			this->pbo_file.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			FILE_READ(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 			pbo_entry->set_packing_method(*((unsigned int*)uLong));
 
-			this->pbo_file.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			FILE_READ(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 			pbo_entry->set_original_size(*((unsigned int*)uLong));
 
-			this->pbo_file.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			FILE_READ(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 			pbo_entry->set_reserved(*((unsigned int*)uLong));
 
-			this->pbo_file.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			FILE_READ(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 			pbo_entry->set_timestamp(*((unsigned int*)uLong));
 
-			this->pbo_file.read(uLong, sizeof(uLong));
-			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
+			FILE_READ(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
 			pbo_entry->set_data_size(*((unsigned int*)uLong));
 
 			if(pbo_entry->is_zero_entry())
@@ -327,13 +309,11 @@ namespace pbo
 			{
 				if(leftDataLength > SIGNATURE_BUFFER_SIZE)
 				{
-					this->pbo_file.read(signatureData, SIGNATURE_BUFFER_SIZE);
-					SHA1_Update(&this->signature_context, &signatureData, SIGNATURE_BUFFER_SIZE);
+					FILE_READ(this->pbo_file, this->signature_context, signatureData, SIGNATURE_BUFFER_SIZE);
 				}
 				else
 				{
-					this->pbo_file.read(signatureData, leftDataLength);
-					SHA1_Update(&this->signature_context, &signatureData, leftDataLength);
+					FILE_READ(this->pbo_file, this->signature_context, signatureData, leftDataLength);
 				}
 
 				leftDataLength = leftDataLength - SIGNATURE_BUFFER_SIZE;
