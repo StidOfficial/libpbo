@@ -78,8 +78,8 @@ namespace pbo
 		for(int i = 0; i < (int)this->size(); i++)
 		{
 			entry *entry = this->entries[i];
-			this->pbo_file.write(entry->get_path().data(), entry->get_path().length() + 1);
-			SHA1_Update(&this->signature_context, entry->get_path().data(), entry->get_path().length() + 1);
+			this->pbo_file.write(entry->get_path().c_str(), entry->get_path().length() + 1);
+			SHA1_Update(&this->signature_context, entry->get_path().c_str(), entry->get_path().length() + 1);
 
 			uLong[0] = (int)(entry->get_packing_method() & 0xFF);
 			uLong[1] = (int)((entry->get_packing_method() >> 8) & 0xFF);
@@ -115,10 +115,10 @@ namespace pbo
 			uLong[3] = (int)((entry->get_data_size() >> 24) & 0xFF);
 			this->pbo_file.write(uLong, sizeof(uLong));
 			SHA1_Update(&this->signature_context, uLong, sizeof(uLong));
-			
+
 			switch(entry->get_packing_method())
 			{
-				case PACKINGMETHOD_PRODUCTENTRY:
+				case PACKINGMETHOD_VERSION:
 				{
 					productentry *productEntry = entry->get_product_entry();
 					if(!productEntry->get_entry_name().empty())
@@ -150,7 +150,8 @@ namespace pbo
 				}
 				case PACKINGMETHOD_UNCOMPRESSED:
 					break;
-				case PACKINGMETHOD_PACKED:
+				case PACKINGMETHOD_COMPRESSED:
+				case PACKINGMETHOD_ENCRYPTED:
 					throw std::logic_error("Packed method is unavailable !");
 					break;
 				default:
@@ -268,7 +269,7 @@ namespace pbo
 			{
 				switch(pbo_entry->get_packing_method())
 				{
-					case PACKINGMETHOD_PRODUCTENTRY:
+					case PACKINGMETHOD_VERSION:
 						productEntryData = "";
 						while(this->pbo_file.get(byte))
 						{
@@ -295,7 +296,8 @@ namespace pbo
 						break;
 					case PACKINGMETHOD_UNCOMPRESSED:
 						break;
-					case PACKINGMETHOD_PACKED:
+					case PACKINGMETHOD_COMPRESSED:
+					case PACKINGMETHOD_ENCRYPTED:
 						std::cout << "WARNING : Packed method is unavailable !" << std::endl;
 						break;
 					default:

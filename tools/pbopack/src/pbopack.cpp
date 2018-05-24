@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 
 	pbo::pbo* pbo_file = new pbo::pbo(file_path);
 	pbo::entry *product_entry = new pbo::entry();
-	product_entry->set_packing_method(PACKINGMETHOD_PRODUCTENTRY);
+	product_entry->set_packing_method(PACKINGMETHOD_VERSION);
 	pbo::productentry *product = product_entry->get_product_entry();
 	product->set_entry_name("prefix");
 	product->set_product_name(product_name);

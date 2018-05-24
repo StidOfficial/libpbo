@@ -34,6 +34,9 @@ namespace pbo
 
 	void entry::set_path(std::string path)
 	{
+		if(path.length() > ENTRY_PATH_LEN)
+			throw std::length_error("Invalid path length");
+
 		this->path = path;
 	}
 
@@ -45,7 +48,7 @@ namespace pbo
 	void entry::set_packing_method(uint32_t packing_method)
 	{
 		this->packing_method = packing_method;
-		if(!this->product_entry && packing_method == PACKINGMETHOD_PRODUCTENTRY)
+		if(!this->product_entry && packing_method == PACKINGMETHOD_VERSION)
 			this->product_entry = new productentry();
 	}
 
@@ -111,13 +114,13 @@ namespace pbo
 
 	bool entry::is_product_entry()
 	{
-		return get_packing_method() == PACKINGMETHOD_PRODUCTENTRY;
+		return get_packing_method() == PACKINGMETHOD_VERSION;
 	}
 
 	bool entry::is_file_entry()
 	{
 		return get_packing_method() == PACKINGMETHOD_UNCOMPRESSED ||
-			get_packing_method() == PACKINGMETHOD_PACKED;
+			get_packing_method() == PACKINGMETHOD_COMPRESSED;
 	}
 
 	bool entry::is_zero_entry()

@@ -53,11 +53,11 @@ int main(int argc, char **argv)
 				case PACKINGMETHOD_UNCOMPRESSED:
 					std::cout << "Uncompressed" << std::endl;
 					break;
-				case PACKINGMETHOD_PACKED:
-					std::cout << "Packed" << std::endl;
+				case PACKINGMETHOD_COMPRESSED:
+					std::cout << "Compressed" << std::endl;
 					break;
-				case PACKINGMETHOD_PRODUCTENTRY:
-					std::cout << "Product entry" << std::endl;
+				case PACKINGMETHOD_VERSION:
+					std::cout << "Version" << std::endl;
 					break;
 				default:
 					std::cout << "Unknown #" << entry->get_packing_method() << std::endl;
