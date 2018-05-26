@@ -10,3 +10,4 @@ pbopack
 pbounpack
 /.vs
 /CMakeSettings.json
+*.pbo
