@@ -126,7 +126,7 @@ namespace pbo
 	bool entry::is_zero_entry()
 	{
 		return this->path.length() == 0 &&
-			this->packing_method == 0 &&
+			(this->packing_method == 0 || this->packing_method == PACKINGMETHOD_COMPRESSED) &&
 			this->original_size == 0 &&
 			this->reserved == 0 &&
 			this->timestamp == 0 &&
