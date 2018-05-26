@@ -205,7 +205,7 @@ namespace pbo
 		this->pbo_file.seekg(0, this->pbo_file.beg);
 
 		std::string productEntryData;
-		std::string entryPath = "";
+		std::string entryPath;
 		char uLong[4];
 		char byte;
 		while(!this->pbo_file.eof())
@@ -215,16 +215,8 @@ namespace pbo
 
 			entry* pbo_entry = new entry();
 
-			entryPath = "";
-			while(this->pbo_file.get(byte))
-			{
-				SHA1_Update(&this->signature_context, &byte, sizeof(byte));
-				if(byte == '\0')
-					break;
-				else
-					entryPath += byte;
-			}
-
+			std::getline(this->pbo_file, entryPath, '\0');
+			SHA1_Update(&this->signature_context, entryPath.c_str(), entryPath.size() + 1);
 			pbo_entry->set_path(entryPath);
 
 			FILE_READ(this->pbo_file, this->signature_context, uLong, sizeof(uLong));
@@ -257,7 +249,7 @@ namespace pbo
 						{
 							SHA1_Update(&this->signature_context, &byte, sizeof(byte));
 							if(byte == '\0')
-								if(productEntryData.length() == 0)
+								if(productEntryData.empty())
 									break;
 								else
 								{
@@ -280,7 +272,7 @@ namespace pbo
 						break;
 					case PACKINGMETHOD_COMPRESSED:
 					case PACKINGMETHOD_ENCRYPTED:
-						std::cout << "WARNING : Packed method is unavailable !" << std::endl;
+						std::cout << "WARNING : Compressed and encrypted method is unavailable !" << std::endl;
 						break;
 					default:
 						std::cout << "WARNING : Unsupported packing method (" << pbo_entry->get_packing_method() << ") !" << std::endl;
