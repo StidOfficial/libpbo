@@ -44,9 +44,9 @@ int main(int argc, char **argv)
 	try
 	{
 		pbo->unpack();
-		int entry_count = (int)pbo->size();
+		size_t entry_count = pbo->size();
 
-		for(int idx(0); idx < entry_count; idx++) {
+		for(size_t idx(0); idx < entry_count; idx++) {
 			auto entry = pbo->get_entry(idx);
 			auto size = entry->get_data_size();
 			auto offset = entry->get_data_offset();

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 project(libPBO VERSION 0.0.1)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenSSL REQUIRED)
 
@@ -14,6 +15,8 @@ set(LIBPBO_SRCS
 
 if(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+elseif(CMAKE_COMPILER_IS_GNUCXX)
+	add_definitions(-Wall -Wextra -pedantic-errors -ansi -Wextra -Wall -Winit-self -Wold-style-cast -Woverloaded-virtual -Wuninitialized -Wmissing-declarations -Winit-self)
 endif()
 
 include_directories(include/)

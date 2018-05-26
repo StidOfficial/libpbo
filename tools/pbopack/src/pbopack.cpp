@@ -78,8 +78,8 @@ int main(int argc, char **argv)
 	product_entry->set_packing_method(PACKINGMETHOD_VERSION);
 	pbo::productentry *product = product_entry->get_product_entry();
 	product->set_entry_name("prefix");
-	product->set_product_name(product_name);
-	product->set_product_version("");
+	product->set_name(product_name);
+	product->set_version("");
 	pbo_file->add_entry(product_entry);
 
 	for(auto i = filesystem::recursive_directory_iterator(base_dir); i != filesystem::recursive_directory_iterator(); i++)
@@ -111,8 +111,8 @@ int main(int argc, char **argv)
 
 void usage()
 {
-	std::cout << "Usage: pbopack [DIRECTORY] [FILE]" << std::endl;
-	std::cout << "Arguments :" << std::endl;
+	std::cout << "Usage: pbopack [OPTION]... [DIRECTORY] [FILE]" << std::endl;
+	std::cout << "Options :" << std::endl;
 	std::cout << "\t--name<NAME>\t\tSet product name" << std::endl;
 	std::cout << "\t--version<VERSION>\tSet product version" << std::endl;
 }

@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 {
 	int exit_code = EXIT_SUCCESS;
 	std::string file_path;
+	bool signed_file = true;
 
 	for(int i = 1;i < argc; i++)
 	{
@@ -20,14 +21,12 @@ int main(int argc, char **argv)
 			usage();
 			return EXIT_SUCCESS;
 		}
+		else if(arg == "-us" || arg == "--unsigned")
+			signed_file = false;
 		else if(arg.find("-", 0, 2) != std::string::npos)
-		{
 			std::cerr << "pboinfo: invalid option « " << arg << " »" << std::endl;
-		}
 		else
-		{
 			file_path = arg;
-		}
 	}
 
 	if(file_path.empty())
@@ -37,11 +36,12 @@ int main(int argc, char **argv)
 	}
 
 	pbo::pbo* pbo_file = new pbo::pbo(file_path);
+	pbo_file->signed_file(signed_file);
 	try
 	{
 		pbo_file->unpack();
 
-		for(int i = 0; i < (int)pbo_file->size(); i++)
+		for(size_t i = 0; i < pbo_file->size(); i++)
 		{
 			pbo::entry *entry = pbo_file->get_entry(i);
 			std::cout << "Packing method: ";
@@ -78,12 +78,12 @@ int main(int argc, char **argv)
 				if(product_entry)
 				{
 					std::cout << "Entry name : " << product_entry->get_entry_name() << std::endl;
-					std::cout << "Product name : " << product_entry->get_product_name() << std::endl;
-					std::cout << "Product version : " << product_entry->get_product_version() << std::endl;
+					std::cout << "Product name : " << product_entry->get_name() << std::endl;
+					std::cout << "Product version : " << product_entry->get_version() << std::endl;
 
-					for(int i = 0; i < (int)product_entry->get_product_data_size(); i++)
+					for(size_t i = 3; i < product_entry->size(); i++)
 					{
-						std::cout << "Product data " << i << " : " << product_entry->get_product_data(i) << std::endl;
+						std::cout << "Product data " << i << " : " << product_entry->get(i) << std::endl;
 					}
 				}
 			}
@@ -91,9 +91,13 @@ int main(int argc, char **argv)
 			std::cout << std::endl;
 		}
 
-		std::cout << "PBO signature: " << pbo_file->pbo_signature() << std::endl;
-		std::cout << "File signature: " << pbo_file->file_signature() << std::endl;
-		std::cout << "Valid signature: " << ((pbo_file->pbo_signature() == pbo_file->file_signature()) ? "true" : "false") << std::endl;
+		std::cout << "Type signature: " << ((pbo_file->is_signed()) ? "Signed" : "Unsigned") << std::endl;
+		if(pbo_file->is_signed())
+		{
+			std::cout << "Signature: " << pbo_file->signature() << std::endl;
+			std::cout << "File signature: " << pbo_file->file_signature() << std::endl;
+			std::cout << "Valid signature: " << ((pbo_file->signature() == pbo_file->file_signature()) ? "true" : "false") << std::endl;
+		}
 	}
 	catch(std::exception const &e)
 	{
@@ -107,5 +111,7 @@ int main(int argc, char **argv)
 
 void usage()
 {
-	std::cout << "Usage: pboinfo [FILE]" << std::endl;
+	std::cout << "Usage: pboinfo [OPTION]... [FILE]" << std::endl;
+	std::cout << "Options: " << std::endl;
+	std::cout << "\t-us, --unsigned\t\tSet unsigned file" << std::endl;
 }

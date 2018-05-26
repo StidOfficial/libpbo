@@ -14,28 +14,33 @@ namespace pbo
 	class PBODLL_API pbo
 	{
 	public:
-		pbo(std::string file_path);
+		pbo(std::string file_path, bool signed_file = true);
 		~pbo();
 
+		void signed_file(bool signed_file);
+		bool is_signed();
 		void add_entry(entry *entry);
 		void remove_entry(int index);
 		entry* &get_entry(int index);
 		size_t size();
-		std::string &pbo_signature();
-		std::string &file_signature();
+		std::string& signature();
+		std::string& file_signature();
 
 		void pack();
 		void unpack();
 	private:
-		SHA_CTX signature_context;
-		std::string pbo_file_path;
-		std::fstream pbo_file;
-		std::string pbo_checksum;
-		std::string file_checksum;
-		std::vector<entry*> entries;
+		SHA_CTX m_sha_context;
+		std::string m_path;
+		bool m_signed;
+		std::fstream m_file;
+		std::string m_checksum;
+		std::string m_file_checksum;
+		std::vector<entry*> m_entries;
 
-		void set_pbo_signature(char* signature_digest);
-		void set_file_signature(char* signature_digest);
+		void read(char* s, std::streamsize n);
+		void write(const char* s, std::streamsize n);
+		void set_signature(char* digest);
+		void set_file_signature(char* digest);
 	};
 }
 
