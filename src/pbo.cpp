@@ -81,14 +81,14 @@ namespace pbo
 
 	void pbo::read(char* s, std::streamsize n)
 	{
-		SHA1_Update(&m_sha_context, s, n);
 		m_file.read(s, n);
+		SHA1_Update(&m_sha_context, s, n);
 	}
 
 	void pbo::write(const char* s, std::streamsize n)
 	{
-		SHA1_Update(&m_sha_context, s, n);
 		m_file.write(s, n);
+		SHA1_Update(&m_sha_context, s, n);
 	}
 
 	void pbo::pack()
@@ -104,34 +104,37 @@ namespace pbo
 		if(!m_file.is_open())
 			throw std::logic_error(std::strerror(errno));
 
-		char uLong[4];
-		for(int i = 0; i < (int)this->size(); i++)
+		char ulong_buffer[4];
+		for(size_t i = 0; i < this->size(); i++)
 		{
 			entry *entry = m_entries[i];
 			write(entry->get_path().c_str(), entry->get_path().length() + 1);
 
-			ULONG_WRITE(uLong, entry->get_packing_method());
-			write(uLong, sizeof(uLong));
+			ULONG_WRITE(ulong_buffer, entry->get_packing_method());
+			write(ulong_buffer, sizeof(uint32_t));
 
-			ULONG_WRITE(uLong, entry->get_original_size());
-			write(uLong, sizeof(uLong));
+			ULONG_WRITE(ulong_buffer, entry->get_original_size());
+			write(ulong_buffer, sizeof(uint32_t));
 
-			ULONG_WRITE(uLong, entry->get_reserved());
-			write(uLong, sizeof(uLong));
+			ULONG_WRITE(ulong_buffer, entry->get_reserved());
+			write(ulong_buffer, sizeof(uint32_t));
 
-			ULONG_WRITE(uLong, entry->get_timestamp());
-			write(uLong, sizeof(uLong));
+			ULONG_WRITE(ulong_buffer, entry->get_timestamp());
+			write(ulong_buffer, sizeof(uint32_t));
 
-			ULONG_WRITE(uLong, entry->get_data_size());
-			write(uLong, sizeof(uLong));
+			ULONG_WRITE(ulong_buffer, entry->get_data_size());
+			write(ulong_buffer, sizeof(uint32_t));
 
 			switch(entry->get_packing_method())
 			{
 				case PACKINGMETHOD_VERSION:
 				{
 					productentry* productEntry = entry->get_product_entry();
-					for(int i = 0; i < (int)productEntry->size(); i++)
+					for(size_t i = 0; i < productEntry->size(); i++)
 					{
+						if(productEntry->get(i).empty())
+							break;
+
 						write(productEntry->get(i).c_str(), productEntry->get(i).length() + 1);
 					}
 
@@ -154,7 +157,7 @@ namespace pbo
 		write(zeroEntry, sizeof(zeroEntry));
 
 		char entryFileBuffer[PACKING_BUFFER_SIZE];
-		for(int i = 0; i < (int)this->size(); i++)
+		for(size_t i = 0; i < this->size(); i++)
 		{
 			entry *entry = m_entries[i];
 			switch(entry->get_packing_method())
@@ -169,7 +172,7 @@ namespace pbo
 					while(!entryFile.eof())
 					{
 						entryFile.read(entryFileBuffer, sizeof(entryFileBuffer));
-						write(entryFileBuffer, (size_t)entryFile.gcount());
+						write(entryFileBuffer, entryFile.gcount());
 					}
 
 					entryFile.close();
@@ -181,7 +184,7 @@ namespace pbo
 		}
 
 		char file_digest[SHA_DIGEST_LENGTH];
-		SHA1_Final((unsigned char*)file_digest, &m_sha_context);
+		SHA1_Final(reinterpret_cast<unsigned char*>(&file_digest), &m_sha_context);
 		this->set_signature(file_digest);
 		this->set_file_signature(file_digest);
 
@@ -203,7 +206,7 @@ namespace pbo
 			throw std::logic_error(std::strerror(errno));
 
 		m_file.seekg(0, m_file.end);
-		int fileLength = (int)m_file.tellg();
+		std::streampos file_size = m_file.tellg();
 		m_file.seekg(0, m_file.beg);
 
 		std::string productEntryData;
@@ -211,7 +214,7 @@ namespace pbo
 		char uLong[4];
 		while(!m_file.eof())
 		{
-			if(((int)m_file.tellg() + HEADER_ENTRY_DEFAULT_SIZE) > fileLength)
+			if((m_file.tellg() + std::streampos(HEADER_ENTRY_DEFAULT_SIZE)) > file_size)
 				throw std::logic_error("Header entry is too small");
 
 			entry* pbo_entry = new entry();
@@ -222,19 +225,19 @@ namespace pbo
 			pbo_entry->set_path(entryPath);
 
 			read(uLong, sizeof(uLong));
-			pbo_entry->set_packing_method(*((unsigned int*)uLong));
+			pbo_entry->set_packing_method(*((uint32_t*)uLong));
 
 			read(uLong, sizeof(uLong));
-			pbo_entry->set_original_size(*((unsigned int*)uLong));
+			pbo_entry->set_original_size(*((uint32_t*)uLong));
 
 			read(uLong, sizeof(uLong));
-			pbo_entry->set_reserved(*((unsigned int*)uLong));
+			pbo_entry->set_reserved(*((uint32_t*)uLong));
 
 			read(uLong, sizeof(uLong));
-			pbo_entry->set_timestamp(*((unsigned int*)uLong));
+			pbo_entry->set_timestamp(*((uint32_t*)uLong));
 
 			read(uLong, sizeof(uLong));
-			pbo_entry->set_data_size(*((unsigned int*)uLong));
+			pbo_entry->set_data_size(*((uint32_t*)uLong));
 
 			if(pbo_entry->is_zero_entry())
 			{
@@ -276,18 +279,18 @@ namespace pbo
 
 			this->add_entry(pbo_entry);
 
-			if(m_file.tellg() == (std::streampos)-1)
+			if(m_file.eof())
 				throw std::logic_error("No zero entry found");
 		}
 
-		int dataOffset = (int)m_file.tellg();
+		std::streampos data_offset = m_file.tellg();
 		int leftDataLength;
-		for(int i = 0; i < (int)size(); i++)
+		for(size_t i = 0; i < size(); i++)
 		{
 			entry* pbo_entry = this->get_entry(i);
-			pbo_entry->set_data_offset(dataOffset);
+			pbo_entry->set_data_offset(data_offset);
 
-			dataOffset = dataOffset + pbo_entry->get_data_size();
+			data_offset = data_offset + std::streamsize(pbo_entry->get_data_size());
 			leftDataLength = pbo_entry->get_data_size();
 
 			char signatureData[SIGNATURE_BUFFER_SIZE];
@@ -302,7 +305,7 @@ namespace pbo
 			}
 		}
 
-		if((fileLength - dataOffset) == HEADER_ENTRY_DEFAULT_SIZE)
+		if((file_size - data_offset) == HEADER_ENTRY_DEFAULT_SIZE)
 		{
 			m_file.get();
 
@@ -312,7 +315,7 @@ namespace pbo
 			this->set_signature(pbo_digest);
 
 			char file_digest[SHA_DIGEST_LENGTH];
-			SHA1_Final((unsigned char*)file_digest, &m_sha_context);
+			SHA1_Final(reinterpret_cast<unsigned char*>(file_digest), &m_sha_context);
 
 			this->set_file_signature(file_digest);
 		}
@@ -320,7 +323,7 @@ namespace pbo
 			if(is_signed())
 				throw std::logic_error("Signature not found");
 
-		if(dataOffset > fileLength)
+		if(data_offset > file_size)
 			throw std::logic_error("Is too small");
 	}
 

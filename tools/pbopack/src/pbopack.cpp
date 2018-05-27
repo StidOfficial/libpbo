@@ -27,11 +27,11 @@ int main(int argc, char **argv)
 		}
 		else if(arg.find("--name=", 0) == 0)
 		{
-			std::cout << arg.substr(7) << std::endl;
+			product_name = arg.substr(7);
 		}
 		else if(arg.find("--version=", 0) == 0)
 		{
-			std::cout << arg.substr(10) << std::endl;
+			product_version = arg.substr(10);
 		}
 		else if(arg.find("--", 0, 2) == 0 || arg.find("-", 0, 1) == 0)
 		{

@@ -76,7 +76,7 @@ namespace pbo
 
 	std::string productentry::get(int index)
 	{
-		if(size() > index)
+		if(size() > static_cast<size_t>(index))
 			return product_data[index];
 		else
 			return std::string();
