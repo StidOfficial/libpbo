@@ -2,9 +2,9 @@
 #define ENTRY_HPP
 
 #include <string>
-#include <fstream>
 #include <ctime>
 #include <cstdint>
+#include <ios>
 
 #include "pboDll.h"
 #include "productentry.hpp"
@@ -38,8 +38,8 @@ namespace pbo
 		uint32_t get_timestamp();
 		void set_data_size(uint32_t data_size);
 		int get_data_size();
-		void set_data_offset(int data_offset);
-		int get_data_offset();
+		void set_data_offset(std::streampos data_offset);
+		std::streampos get_data_offset();
 		productentry* &get_product_entry();
 		bool is_product_entry();
 		bool is_file_entry();
@@ -52,7 +52,7 @@ namespace pbo
 		uint32_t reserved;
 		uint32_t timestamp;
 		uint32_t data_size;
-		int data_offset;
+		std::streampos data_offset;
 		productentry *product_entry;
 	};
 }

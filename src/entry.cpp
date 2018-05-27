@@ -97,12 +97,12 @@ namespace pbo
 		return this->data_size;
 	}
 
-	void entry::set_data_offset(int data_offset)
+	void entry::set_data_offset(std::streampos data_offset)
 	{
 		this->data_offset = data_offset;
 	}
 
-	int entry::get_data_offset()
+	std::streampos entry::get_data_offset()
 	{
 		return this->data_offset;
 	}
