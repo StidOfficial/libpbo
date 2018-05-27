@@ -26,6 +26,7 @@ target_compile_definitions(pbo PUBLIC -DPBODLL_EXPORTS)
 add_executable(pboinfo tools/pboinfo/src/pboinfo.cpp)
 add_executable(pbopack tools/pbopack/src/pbopack.cpp)
 add_executable(pbounpack tools/pbounpack/src/pbounpack.cpp)
+add_executable(pbocreatekey tools/pbocreatekey/src/pbocreatekey.cpp)
 
 target_include_directories(pbo PUBLIC include PRIVATE include/libpbo)
 if(MSVC)
@@ -41,6 +42,8 @@ else()
 	target_link_libraries(pbopack stdc++fs pbo)
 	target_link_libraries(pbounpack stdc++fs pbo)
 endif()
+
+target_link_libraries(pbocreatekey OpenSSL::Crypto)
 
 install(TARGETS pbo LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 install(DIRECTORY include/libpbo DESTINATION include)
