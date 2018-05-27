@@ -8,9 +8,11 @@ find_package(OpenSSL REQUIRED)
 set(EXECUTABLE_OUTPUT_PATH bin/)
 set(LIBRARY_OUTPUT_PATH bin/)
 set(LIBPBO_SRCS
-    src/entry.cpp
-    src/pbo.cpp
-    src/productentry.cpp
+	src/cryptokey.cpp
+	src/entry.cpp
+	src/pbo.cpp
+	src/productentry.cpp
+	src/signature.cpp
 )
 
 if(MSVC)
@@ -43,7 +45,7 @@ else()
 	target_link_libraries(pbounpack stdc++fs pbo)
 endif()
 
-target_link_libraries(pbocreatekey OpenSSL::Crypto)
+target_link_libraries(pbocreatekey OpenSSL::Crypto pbo)
 
 install(TARGETS pbo LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 install(DIRECTORY include/libpbo DESTINATION include)

@@ -11,3 +11,5 @@ pbounpack
 /.vs
 /CMakeSettings.json
 *.pbo
+*.bikey
+*.biprivatekey
