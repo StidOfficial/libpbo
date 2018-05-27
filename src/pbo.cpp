@@ -82,13 +82,13 @@ namespace pbo
 	void pbo::read(char* s, std::streamsize n)
 	{
 		m_file.read(s, n);
-		SHA1_Update(&m_sha_context, s, n);
+		SHA1_Update(&m_sha_context, s, (size_t)n);
 	}
 
 	void pbo::write(const char* s, std::streamsize n)
 	{
 		m_file.write(s, n);
-		SHA1_Update(&m_sha_context, s, n);
+		SHA1_Update(&m_sha_context, s, (size_t)n);
 	}
 
 	void pbo::pack()
