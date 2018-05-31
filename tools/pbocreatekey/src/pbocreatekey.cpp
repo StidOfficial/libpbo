@@ -2,7 +2,6 @@
 #include <string>
 #include <cstdlib>
 #include <fstream>
-#include <openssl/rsa.h>
 #include <cstring>
 #include <libpbo/cryptokey.hpp>
 #include <libpbo/signature.hpp>

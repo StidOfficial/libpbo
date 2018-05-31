@@ -13,6 +13,7 @@ set(LIBPBO_SRCS
 	src/pbo.cpp
 	src/productentry.cpp
 	src/signature.cpp
+	src/signature_generator.cpp
 )
 
 if(MSVC)

@@ -2,6 +2,10 @@
 
 namespace pbo
 {
+	signature::signature()
+	{
+	}
+
 	signature::signature(std::string path)
 	{
 		m_cryptokey = cryptokey();
@@ -18,7 +22,7 @@ namespace pbo
 		return m_authorityname;
 	}
 
-	::pbo::cryptokey signature::cryptokey()
+	pbo::cryptokey signature::cryptokey()
 	{
 		return m_cryptokey;
 	}

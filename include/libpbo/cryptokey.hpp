@@ -98,14 +98,28 @@ namespace pbo
 	public:
 		cryptokey();
 		cryptokey(int type, unsigned int bitlen, unsigned int pubexp);
-		cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, unsigned char* key, int key_length);
+		cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length);
+		cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length,
+																				unsigned char* p, int p_length,
+																				unsigned char* q, int q_length,
+																				unsigned char* dmp1, int dmp1_length,
+																				unsigned char* dmq1, int dmq1_length,
+																				unsigned char* iqmp, int iqmp_length,
+																				unsigned char* d, int d_length);
 		unsigned char* key();
 		int size();
 		char* data();
 	private:
+		int m_type;
 		blobheader m_blobheader;
 		rsapubkey m_rsapubkey;
-		std::vector<unsigned char> m_key;
+		std::vector<unsigned char> m_n;
+		std::vector<unsigned char> m_p;
+		std::vector<unsigned char> m_q;
+		std::vector<unsigned char> m_dmp1;
+		std::vector<unsigned char> m_dmq1;
+		std::vector<unsigned char> m_iqmp;
+		std::vector<unsigned char> m_d;
 	};
 }
 
