@@ -30,6 +30,7 @@ add_executable(pboinfo tools/pboinfo/src/pboinfo.cpp)
 add_executable(pbopack tools/pbopack/src/pbopack.cpp)
 add_executable(pbounpack tools/pbounpack/src/pbounpack.cpp)
 add_executable(pbocreatekey tools/pbocreatekey/src/pbocreatekey.cpp)
+add_executable(pbosignfile tools/pbosignfile/src/pbosignfile.cpp)
 
 target_include_directories(pbo PUBLIC include PRIVATE include/libpbo)
 if(MSVC)
@@ -47,6 +48,7 @@ else()
 endif()
 
 target_link_libraries(pbocreatekey OpenSSL::Crypto pbo)
+target_link_libraries(pbosignfile OpenSSL::Crypto pbo)
 
 install(TARGETS pbo LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 install(DIRECTORY include/libpbo DESTINATION include)
