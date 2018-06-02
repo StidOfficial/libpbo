@@ -7,6 +7,7 @@
 #include <locale>
 #include <experimental/filesystem>
 #include <unistd.h>
+#include <openssl/md5.h>
 #include <libpbo/cryptokey.hpp>
 #include <libpbo/signature_generator.hpp>
 
@@ -45,29 +46,37 @@ int main(int argc, char **argv)
 	{
 		pbo::signature_generator sign_gen(authorityname);
 
-		filesystem::path bikey_path = filesystem::path(authorityname + ".bikey");
-		std::ofstream bikey(filesystem::canonical(bikey_path).c_str(), std::ios_base::binary);
+		MD5_CTX md5_biprivatekey, md5_bikey;
+		MD5_Init(&md5_biprivatekey);
+		MD5_Init(&md5_bikey);
 
-		bikey.write(authorityname.c_str(), authorityname.length() + 1);
-		unsigned int publiccryptokey_length = sign_gen.public_signature().cryptokey().size();
-		char* publiccyptokey = sign_gen.public_signature().cryptokey().data();
-		bikey.write(reinterpret_cast<char*>(&publiccryptokey_length), sizeof(unsigned int));
-		bikey.write(publiccyptokey, publiccryptokey_length);
-		delete[] publiccyptokey;
-
-		bikey.close();
-
-		filesystem::path biprivatekey_path = filesystem::path(authorityname + ".biprivatekey");
-		std::ofstream biprivatekey(filesystem::canonical(biprivatekey_path).c_str(), std::ios_base::binary);
+		filesystem::path biprivatekey_path = authorityname + ".biprivatekey";
+		std::ofstream biprivatekey(filesystem::absolute(biprivatekey_path).c_str(), std::ios_base::binary);
 
 		biprivatekey.write(authorityname.c_str(), authorityname.length() + 1);
 		int privatecryptokey_length = sign_gen.private_signature().cryptokey().size();
 		char* privatecryptokey = sign_gen.private_signature().cryptokey().data();
 		biprivatekey.write(reinterpret_cast<char*>(&privatecryptokey_length), sizeof(unsigned int));
+		MD5_Update(&md5_bikey, reinterpret_cast<char*>(&privatecryptokey_length), sizeof(unsigned int));
 		biprivatekey.write(privatecryptokey, privatecryptokey_length);
+		MD5_Update(&md5_bikey, privatecryptokey, privatecryptokey_length);
 		delete[] privatecryptokey;
 
 		biprivatekey.close();
+
+		filesystem::path bikey_path = authorityname + ".bikey";
+		std::ofstream bikey(filesystem::absolute(bikey_path).c_str(), std::ios_base::binary);
+
+		bikey.write(authorityname.c_str(), authorityname.length() + 1);
+		unsigned int publiccryptokey_length = sign_gen.public_signature().cryptokey().size();
+		char* publiccyptokey = sign_gen.public_signature().cryptokey().data();
+		bikey.write(reinterpret_cast<char*>(&publiccryptokey_length), sizeof(unsigned int));
+		MD5_Update(&md5_bikey, reinterpret_cast<char*>(&publiccryptokey_length), sizeof(unsigned int));
+		bikey.write(publiccyptokey, publiccryptokey_length);
+		MD5_Update(&md5_bikey, publiccyptokey, publiccryptokey_length);
+		delete[] publiccyptokey;
+
+		bikey.close();
 
 		std::locale::global(std::locale("en_US.utf8"));
 		std::time_t t = std::time(NULL);
@@ -82,12 +91,22 @@ int main(int argc, char **argv)
 
 		std::cout << std::endl;
 
+		unsigned char digest[MD5_DIGEST_LENGTH];
+		char mdString[MD5_DIGEST_LENGTH * 2];
+
 		std::cout << "== PRIVATE KEY ==" << std::endl;
-		std::cout << "File: " << filesystem::canonical(biprivatekey_path).c_str() << std::endl;
-		std::cout << "MD5: " << std::endl;
+		std::cout << "File: " << filesystem::absolute(biprivatekey_path).c_str() << std::endl;
+		MD5_Final(digest, &md5_bikey);
+		for (int i = 0; i < MD5_DIGEST_LENGTH; i++)
+			sprintf(&mdString[i * 2], "%02x", digest[i]);
+		std::cout << "MD5: " << mdString << std::endl;
+
 		std::cout << "== PUBLIC KEY ==" << std::endl;
-		std::cout << "File: " << filesystem::canonical(bikey_path).c_str() << std::endl;
-		std::cout << "MD5: " << std::endl;
+		std::cout << "File: " << filesystem::absolute(bikey_path).c_str() << std::endl;
+		MD5_Final(digest, &md5_biprivatekey);
+		for (int i = 0; i < MD5_DIGEST_LENGTH; i++)
+			sprintf(&mdString[i * 2], "%02x", digest[i]);
+		std::cout << "MD5: " << mdString << std::endl;
 	}
 	catch(const std::exception& e)
 	{
