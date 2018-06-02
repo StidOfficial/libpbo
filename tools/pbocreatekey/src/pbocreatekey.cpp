@@ -98,9 +98,11 @@ int main(int argc, char **argv)
 	std::ofstream bikey(bikey_path.c_str(), std::ios_base::binary);
 
 	bikey.write(authorityname.c_str(), authorityname.length() + 1);
-	unsigned int test = publickey.size();
-	bikey.write(reinterpret_cast<char*>(&test), sizeof(unsigned int));
-	bikey.write(publickey.data(), publickey.size());
+	unsigned int publiccryptokey_length = publickey.size();
+	char* publiccyptokey = publickey.data();
+	bikey.write(reinterpret_cast<char*>(&publiccryptokey_length), sizeof(unsigned int));
+	bikey.write(publiccyptokey, publiccryptokey_length);
+	delete[] publiccyptokey;
 
 	bikey.close();
 
@@ -108,10 +110,11 @@ int main(int argc, char **argv)
 	std::ofstream biprivatekey(biprivatekey_path, std::ios_base::binary);
 
 	biprivatekey.write(authorityname.c_str(), authorityname.length() + 1);
-	test = privatekey.size();
-	biprivatekey.write(reinterpret_cast<char*>(&test), sizeof(unsigned int));
-	biprivatekey.write(privatekey.data(), privatekey.size());
-	std::cout << privatekey.size() << std::endl;
+	int privatecryptokey_length = privatekey.size();
+	char* privatecryptokey = privatekey.data();
+	biprivatekey.write(reinterpret_cast<char*>(&privatecryptokey_length), sizeof(unsigned int));
+	biprivatekey.write(privatecryptokey, privatecryptokey_length);
+	delete[] privatecryptokey;
 
 	biprivatekey.close();
 
