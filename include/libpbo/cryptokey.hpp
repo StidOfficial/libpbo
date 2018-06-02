@@ -88,17 +88,20 @@ typedef struct _rsapubkey
 
 #include "pboDll.h"
 
-#define CRYPTOKEY_PRIVATE	1
-#define CRYPTOKEY_PUBLIC	2
-
 namespace pbo
 {
 	class PBODLL_API cryptokey
 	{
 	public:
 		cryptokey();
-		cryptokey(int type, unsigned int bitlen, unsigned int pubexp);
-		cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length);
+		cryptokey(char type, unsigned int bitlen, unsigned int pubexp);
+		cryptokey(char type, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length,
+										unsigned char* p, int p_length,
+										unsigned char* q, int q_length,
+										unsigned char* dmp1, int dmp1_length,
+										unsigned char* dmq1, int dmq1_length,
+										unsigned char* iqmp, int iqmp_length,
+										unsigned char* d, int d_length);
 		cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length,
 																				unsigned char* p, int p_length,
 																				unsigned char* q, int q_length,
@@ -106,11 +109,16 @@ namespace pbo
 																				unsigned char* dmq1, int dmq1_length,
 																				unsigned char* iqmp, int iqmp_length,
 																				unsigned char* d, int d_length);
-		unsigned char* key();
+		void set_n(unsigned char* n, int n_length);
+		void set_p(unsigned char* p, int p_length);
+		void set_q(unsigned char* q, int q_length);
+		void set_dmp1(unsigned char* dmp1, int dmp1_length);
+		void set_dmq1(unsigned char* dmq1, int dmq1_length);
+		void set_iqmp(unsigned char* iqmp, int iqmp_length);
+		void set_d(unsigned char* d, int d_length);
 		int size();
 		char* data();
 	private:
-		int m_type;
 		blobheader m_blobheader;
 		rsapubkey m_rsapubkey;
 		std::vector<unsigned char> m_n;

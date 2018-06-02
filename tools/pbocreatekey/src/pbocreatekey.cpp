@@ -62,46 +62,34 @@ int main(int argc, char **argv)
 	RSA_get0_key(keypair, &n, &e, &d);
 	RSA_get0_factors(keypair, &p, &q);
 	RSA_get0_crt_params(keypair, &dmp1, &dmq1, &iqmp);
-	/*std::cout << BN_bn2hex(n) << std::endl;
-	std::cout << "N : " << std::string(BN_bn2hex(n)).length() << std::endl;
-	std::cout << BN_bn2hex(e) << std::endl;
-	std::cout << "E : " << std::string(BN_bn2hex(e)).length() << std::endl;
-	std::cout << BN_bn2hex(d) << std::endl;
-	std::cout << "D : " << std::string(BN_bn2hex(d)).length() << std::endl;
-	std::cout << "===" << std::endl;*/
+
+	pbo::cryptokey publickey(PUBLICKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PUBLICKEY_MAGIC, bits, exp, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
+	pbo::cryptokey privatekey(PRIVATEKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PRIVATEKEY_MAGIC, bits, exp, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
 
 	unsigned char key_buffer[1024];
 	int key_size;
 
 	key_size = BN_bn2bin(n, key_buffer);
-	std::cout << key_size << std::endl;
-
-	pbo::cryptokey publickey(PUBLICKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PUBLICKEY_MAGIC, bits, exp, key_buffer, key_size);
-
-	std::cout << "===" << std::endl;
-
-	key_size = BN_bn2bin(n, key_buffer);
-	std::cout << key_size << std::endl;
-
-	pbo::cryptokey privatekey(PRIVATEKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PRIVATEKEY_MAGIC, bits, exp, key_buffer, key_size);
+	publickey.set_n(key_buffer, key_size);
+	privatekey.set_n(key_buffer, key_size);
 
 	key_size = BN_bn2bin(p, key_buffer);
-	std::cout << key_size << std::endl;
+	privatekey.set_p(key_buffer, key_size);
 
 	key_size = BN_bn2bin(q, key_buffer);
-	std::cout << key_size << std::endl;
+	privatekey.set_q(key_buffer, key_size);
 
 	key_size = BN_bn2bin(dmp1, key_buffer);
-	std::cout << key_size << std::endl;
+	privatekey.set_dmp1(key_buffer, key_size);
 
 	key_size = BN_bn2bin(dmq1, key_buffer);
-	std::cout << key_size << std::endl;
+	privatekey.set_dmq1(key_buffer, key_size);
 
 	key_size = BN_bn2bin(iqmp, key_buffer);
-	std::cout << key_size << std::endl;
+	privatekey.set_iqmp(key_buffer, key_size);
 
 	key_size = BN_bn2bin(d, key_buffer);
-	std::cout << key_size << std::endl;
+	privatekey.set_d(key_buffer, key_size);
 
 	BN_free(bne);
 	RSA_free(keypair);
@@ -123,6 +111,7 @@ int main(int argc, char **argv)
 	test = privatekey.size();
 	biprivatekey.write(reinterpret_cast<char*>(&test), sizeof(unsigned int));
 	biprivatekey.write(privatekey.data(), privatekey.size());
+	std::cout << privatekey.size() << std::endl;
 
 	biprivatekey.close();
 
