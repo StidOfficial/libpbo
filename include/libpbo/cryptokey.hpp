@@ -2,6 +2,7 @@
 #define CRYPTOKEY_HPP
 
 #include <vector>
+#include <openssl/bn.h>
 
 #define KEYSTATEBLOB				0xC
 #define OPAQUEKEYBLOB				0x9
@@ -94,40 +95,34 @@ namespace pbo
 	{
 	public:
 		cryptokey();
-		cryptokey(char type, unsigned int bitlen, unsigned int pubexp);
-		cryptokey(char type, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length,
-										unsigned char* p, int p_length,
-										unsigned char* q, int q_length,
-										unsigned char* dmp1, int dmp1_length,
-										unsigned char* dmq1, int dmq1_length,
-										unsigned char* iqmp, int iqmp_length,
-										unsigned char* d, int d_length);
-		cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length,
-																				unsigned char* p, int p_length,
-																				unsigned char* q, int q_length,
-																				unsigned char* dmp1, int dmp1_length,
-																				unsigned char* dmq1, int dmq1_length,
-																				unsigned char* iqmp, int iqmp_length,
-																				unsigned char* d, int d_length);
-		void set_n(unsigned char* n, int n_length);
-		void set_p(unsigned char* p, int p_length);
-		void set_q(unsigned char* q, int q_length);
-		void set_dmp1(unsigned char* dmp1, int dmp1_length);
-		void set_dmq1(unsigned char* dmq1, int dmq1_length);
-		void set_iqmp(unsigned char* iqmp, int iqmp_length);
-		void set_d(unsigned char* d, int d_length);
+		cryptokey(char type, unsigned int bitlen, unsigned int pubexp, const BIGNUM *n = NULL,
+										const BIGNUM *p = NULL,
+										const BIGNUM *q = NULL,
+										const BIGNUM *dmp1 = NULL,
+										const BIGNUM *dmq1 = NULL,
+										const BIGNUM *iqmp = NULL,
+										const BIGNUM *d = NULL);
+		cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, const BIGNUM *n = NULL,
+																				const BIGNUM *p = NULL,
+																				const BIGNUM *q = NULL,
+																				const BIGNUM *dmp1 = NULL,
+																				const BIGNUM *dmq1 = NULL,
+																				const BIGNUM *iqmp = NULL,
+																				const BIGNUM *d = NULL);
+		~cryptokey();
+		void set_n(const BIGNUM *n);
+		void set_p(const BIGNUM *p);
+		void set_q(const BIGNUM *q);
+		void set_dmp1(const BIGNUM *dmp1);
+		void set_dmq1(const BIGNUM *dmq1);
+		void set_iqmp(const BIGNUM *iqmp);
+		void set_d(const BIGNUM *d);
 		int size();
 		char* data();
 	private:
 		blobheader m_blobheader;
 		rsapubkey m_rsapubkey;
-		std::vector<unsigned char> m_n;
-		std::vector<unsigned char> m_p;
-		std::vector<unsigned char> m_q;
-		std::vector<unsigned char> m_dmp1;
-		std::vector<unsigned char> m_dmq1;
-		std::vector<unsigned char> m_iqmp;
-		std::vector<unsigned char> m_d;
+		const BIGNUM *m_n, *m_p, *m_q, *m_dmp1, *m_dmq1, *m_iqmp, *m_d;
 	};
 }
 

@@ -9,12 +9,7 @@ namespace pbo
 	{
 	}
 
-	cryptokey::cryptokey(char type, unsigned int bitlen, unsigned int pubexp)
-	{
-		cryptokey(type, bitlen, pubexp, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
-	}
-
-	cryptokey::cryptokey(char type, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length,
+	/*cryptokey::cryptokey(char type, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length,
 										unsigned char* p, int p_length,
 										unsigned char* q, int q_length,
 										unsigned char* dmp1, int dmp1_length,
@@ -37,15 +32,15 @@ namespace pbo
 			default:
 				throw std::logic_error("Unknown type");
 		}
-	}
+	}*/
 
-	cryptokey::cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, unsigned char* n, int n_length,
-																				unsigned char* p, int p_length,
-																				unsigned char* q, int q_length,
-																				unsigned char* dmp1, int dmp1_length,
-																				unsigned char* dmq1, int dmq1_length,
-																				unsigned char* iqmp, int iqmp_length,
-																				unsigned char* d, int d_length)
+	cryptokey::cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, const BIGNUM *n,
+																				const BIGNUM *p,
+																				const BIGNUM *q,
+																				const BIGNUM *dmp1,
+																				const BIGNUM *dmq1,
+																				const BIGNUM *iqmp,
+																				const BIGNUM *d)
 	{
 		m_blobheader.type = type;
 		m_blobheader.version = version;
@@ -58,28 +53,20 @@ namespace pbo
 
 		switch(m_blobheader.type)
 		{
-			case PUBLICKEYBLOB:
-			{
-				if(n != NULL)
-					set_n(n, n_length);
-				break;
-			}
 			case PRIVATEKEYBLOB:
 			{
-				if(n != NULL)
-					set_n(n, n_length);
-				if(p != NULL)
-					set_p(p, p_length);
-				if(q != NULL)
-					set_q(q, q_length);
-				if(dmp1 != NULL)
-					set_dmp1(dmp1, dmp1_length);
-				if(dmq1 != NULL)
-					set_dmq1(dmq1, dmq1_length);
-				if(iqmp != NULL)
-					set_iqmp(iqmp, iqmp_length);
-				if(d != NULL)
-					set_d(d, d_length);
+				set_n(n);
+				set_p(p);
+				set_q(q);
+				set_dmp1(dmp1);
+				set_dmq1(dmq1);
+				set_iqmp(iqmp);
+				set_d(d);
+				break;
+			}
+			case PUBLICKEYBLOB:
+			{
+				set_n(n);
 				break;
 			}
 			default:
@@ -87,49 +74,55 @@ namespace pbo
 		}
 	}
 
-	void cryptokey::set_n(unsigned char* n, int n_length)
+	void cryptokey::set_n(const BIGNUM *n)
 	{
-		m_n.assign(n, n + n_length);
+		m_n = n;
 	}
 
-	void cryptokey::set_p(unsigned char* p, int p_length)
+	void cryptokey::set_p(const BIGNUM *p)
 	{
-		m_p.assign(p, p + p_length);
+		m_p = p;
 	}
 
-	void cryptokey::set_q(unsigned char* q, int q_length)
+	void cryptokey::set_q(const BIGNUM *q)
 	{
-		m_q.assign(q, q + q_length);
+		m_q = q;
 	}
 
-	void cryptokey::set_dmp1(unsigned char* dmp1, int dmp1_length)
+	void cryptokey::set_dmp1(const BIGNUM *dmp1)
 	{
-		m_dmp1.assign(dmp1, dmp1 + dmp1_length);
+		m_dmp1 = dmp1;
 	}
 
-	void cryptokey::set_dmq1(unsigned char* dmq1, int dmq1_length)
+	void cryptokey::set_dmq1(const BIGNUM *dmq1)
 	{
-		m_dmq1.assign(dmq1, dmq1 + dmq1_length);
+		m_dmq1 = dmq1;
 	}
 
-	void cryptokey::set_iqmp(unsigned char* iqmp, int iqmp_length)
+	void cryptokey::set_iqmp(const BIGNUM *iqmp)
 	{
-		m_iqmp.assign(iqmp, iqmp + iqmp_length);
+		m_iqmp = iqmp;
 	}
 
-	void cryptokey::set_d(unsigned char* d, int d_length)
+	void cryptokey::set_d(const BIGNUM *d)
 	{
-		m_d.assign(d, d + d_length);
+		m_d = d;
 	}
 
 	int cryptokey::size()
 	{
 		switch(m_blobheader.type)
 		{
-			case PUBLICKEYBLOB:
-				return sizeof(blobheader) + sizeof(rsapubkey) + m_n.size();
 			case PRIVATEKEYBLOB:
-				return sizeof(blobheader) + sizeof(rsapubkey) + m_n.size() + m_p.size() + m_q.size() + m_dmp1.size() + m_dmq1.size() + m_iqmp.size() + m_d.size();
+				return sizeof(blobheader) + sizeof(rsapubkey) + BN_num_bytes(m_n) \
+										+ BN_num_bytes(m_p) \
+										+ BN_num_bytes(m_q) \
+										+ BN_num_bytes(m_dmp1) \
+										+ BN_num_bytes(m_dmq1) \
+										+ BN_num_bytes(m_iqmp) \
+										+ BN_num_bytes(m_d);
+			case PUBLICKEYBLOB:
+				return sizeof(blobheader) + sizeof(rsapubkey) + BN_num_bytes(m_n);
 			default:
 				return -1;
 		}
@@ -150,24 +143,44 @@ namespace pbo
 		index += sizeof(blobheader);
 		std::memcpy(buffer + index, rsapubkey_buffer, sizeof(rsapubkey));
 		index += sizeof(rsapubkey);
-		std::memcpy(buffer + index, m_n.data(), m_n.size());
-		index += m_n.size();
+
+		unsigned char key_buffer[1024];
+
+		BN_bn2bin(m_n, key_buffer);
+		std::memcpy(buffer + index, key_buffer, BN_num_bytes(m_n));
+		index += BN_num_bytes(m_n);
 
 		if(m_blobheader.type == PRIVATEKEYBLOB)
 		{
-			std::memcpy(buffer + index, m_p.data(), m_p.size());
-			index += m_p.size();
-			std::memcpy(buffer + index, m_p.data(), m_q.size());
-			index += m_q.size();
-			std::memcpy(buffer + index, m_dmp1.data(), m_dmp1.size());
-			index += m_dmp1.size();
-			std::memcpy(buffer + index, m_dmq1.data(), m_dmq1.size());
-			index += m_dmq1.size();
-			std::memcpy(buffer + index, m_iqmp.data(), m_iqmp.size());
-			index += m_iqmp.size();
-			std::memcpy(buffer + index, m_d.data(), m_d.size());
+			BN_bn2bin(m_n, key_buffer);
+			std::memcpy(buffer + index, key_buffer, BN_num_bytes(m_p));
+			index += BN_num_bytes(m_p);
+
+			BN_bn2bin(m_q, key_buffer);
+			std::memcpy(buffer + index, key_buffer, BN_num_bytes(m_q));
+			index += BN_num_bytes(m_q);
+
+			BN_bn2bin(m_dmp1, key_buffer);
+			std::memcpy(buffer + index, key_buffer, BN_num_bytes(m_dmp1));
+			index += BN_num_bytes(m_dmp1);
+
+			BN_bn2bin(m_dmq1, key_buffer);
+			std::memcpy(buffer + index, key_buffer, BN_num_bytes(m_dmq1));
+			index += BN_num_bytes(m_dmq1);
+
+			BN_bn2bin(m_iqmp, key_buffer);
+			std::memcpy(buffer + index, key_buffer, BN_num_bytes(m_iqmp));
+			index += BN_num_bytes(m_iqmp);
+
+			BN_bn2bin(m_d, key_buffer);
+			std::memcpy(buffer + index, key_buffer, BN_num_bytes(m_d));
 		}
 
 		return buffer;
+	}
+
+	cryptokey::~cryptokey()
+	{
+		
 	}
 }

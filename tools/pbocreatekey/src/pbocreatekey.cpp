@@ -3,10 +3,17 @@
 #include <cstdlib>
 #include <fstream>
 #include <cstring>
+#include <ctime>
+#include <locale>
+#include <experimental/filesystem>
+#include <unistd.h>
 #include <libpbo/cryptokey.hpp>
-#include <libpbo/signature.hpp>
+#include <libpbo/signature_generator.hpp>
+
+namespace filesystem = std::experimental::filesystem;
 
 void usage();
+std::string get_owner();
 
 int main(int argc, char **argv)
 {
@@ -34,89 +41,58 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	// RSA
-	unsigned int bits = 1024;
-	unsigned int exp = RSA_F4;
-
-	BIGNUM* bne = BN_new();
-	if(!BN_set_word(bne, exp))
+	try
 	{
-		std::cerr << "BN_set_word() : failed" << std::endl;
-		BN_free(bne);
+		pbo::signature_generator sign_gen(authorityname);
 
-		return EXIT_FAILURE;
+		filesystem::path bikey_path = filesystem::path(authorityname + ".bikey");
+		std::ofstream bikey(filesystem::canonical(bikey_path).c_str(), std::ios_base::binary);
+
+		bikey.write(authorityname.c_str(), authorityname.length() + 1);
+		unsigned int publiccryptokey_length = sign_gen.public_signature().cryptokey().size();
+		char* publiccyptokey = sign_gen.public_signature().cryptokey().data();
+		bikey.write(reinterpret_cast<char*>(&publiccryptokey_length), sizeof(unsigned int));
+		bikey.write(publiccyptokey, publiccryptokey_length);
+		delete[] publiccyptokey;
+
+		bikey.close();
+
+		filesystem::path biprivatekey_path = filesystem::path(authorityname + ".biprivatekey");
+		std::ofstream biprivatekey(filesystem::canonical(biprivatekey_path).c_str(), std::ios_base::binary);
+
+		biprivatekey.write(authorityname.c_str(), authorityname.length() + 1);
+		int privatecryptokey_length = sign_gen.private_signature().cryptokey().size();
+		char* privatecryptokey = sign_gen.private_signature().cryptokey().data();
+		biprivatekey.write(reinterpret_cast<char*>(&privatecryptokey_length), sizeof(unsigned int));
+		biprivatekey.write(privatecryptokey, privatecryptokey_length);
+		delete[] privatecryptokey;
+
+		biprivatekey.close();
+
+		std::locale::global(std::locale("en_US.utf8"));
+		std::time_t t = std::time(NULL);
+
+		char mbstr[18];
+		std::strftime(mbstr, sizeof(mbstr), "%m/%d/%y %H:%M:%S", std::localtime(&t));
+
+		std::string owner = get_owner();
+
+		std::cout << "Authority:\t" << authorityname << std::endl;
+		std::cout << "Creation:\t" << mbstr << " (by " << owner << ")" << std::endl;
+
+		std::cout << std::endl;
+
+		std::cout << "== PRIVATE KEY ==" << std::endl;
+		std::cout << "File: " << filesystem::canonical(biprivatekey_path).c_str() << std::endl;
+		std::cout << "MD5: " << std::endl;
+		std::cout << "== PUBLIC KEY ==" << std::endl;
+		std::cout << "File: " << filesystem::canonical(bikey_path).c_str() << std::endl;
+		std::cout << "MD5: " << std::endl;
 	}
-
-	RSA* keypair = RSA_new();
-	if(!RSA_generate_key_ex(keypair, bits, bne, NULL))
+	catch(const std::exception& e)
 	{
-		std::cerr << "RSA_generate_key_ex() : failed" << std::endl;
-		BN_free(bne);
-		RSA_free(keypair);
-
-		return EXIT_FAILURE;
+		std::cout << e.what() << std::endl;
 	}
-
-	const BIGNUM *n, *e, *d;
-	const BIGNUM *p, *q, *dmp1, *dmq1, *iqmp;
-	RSA_get0_key(keypair, &n, &e, &d);
-	RSA_get0_factors(keypair, &p, &q);
-	RSA_get0_crt_params(keypair, &dmp1, &dmq1, &iqmp);
-
-	pbo::cryptokey publickey(PUBLICKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PUBLICKEY_MAGIC, bits, exp, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
-	pbo::cryptokey privatekey(PRIVATEKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PRIVATEKEY_MAGIC, bits, exp, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0, NULL, 0);
-
-	unsigned char key_buffer[1024];
-	int key_size;
-
-	key_size = BN_bn2bin(n, key_buffer);
-	publickey.set_n(key_buffer, key_size);
-	privatekey.set_n(key_buffer, key_size);
-
-	key_size = BN_bn2bin(p, key_buffer);
-	privatekey.set_p(key_buffer, key_size);
-
-	key_size = BN_bn2bin(q, key_buffer);
-	privatekey.set_q(key_buffer, key_size);
-
-	key_size = BN_bn2bin(dmp1, key_buffer);
-	privatekey.set_dmp1(key_buffer, key_size);
-
-	key_size = BN_bn2bin(dmq1, key_buffer);
-	privatekey.set_dmq1(key_buffer, key_size);
-
-	key_size = BN_bn2bin(iqmp, key_buffer);
-	privatekey.set_iqmp(key_buffer, key_size);
-
-	key_size = BN_bn2bin(d, key_buffer);
-	privatekey.set_d(key_buffer, key_size);
-
-	BN_free(bne);
-	RSA_free(keypair);
-
-	std::string bikey_path = authorityname + ".bikey";
-	std::ofstream bikey(bikey_path.c_str(), std::ios_base::binary);
-
-	bikey.write(authorityname.c_str(), authorityname.length() + 1);
-	unsigned int publiccryptokey_length = publickey.size();
-	char* publiccyptokey = publickey.data();
-	bikey.write(reinterpret_cast<char*>(&publiccryptokey_length), sizeof(unsigned int));
-	bikey.write(publiccyptokey, publiccryptokey_length);
-	delete[] publiccyptokey;
-
-	bikey.close();
-
-	std::string biprivatekey_path = authorityname + ".biprivatekey";
-	std::ofstream biprivatekey(biprivatekey_path, std::ios_base::binary);
-
-	biprivatekey.write(authorityname.c_str(), authorityname.length() + 1);
-	int privatecryptokey_length = privatekey.size();
-	char* privatecryptokey = privatekey.data();
-	biprivatekey.write(reinterpret_cast<char*>(&privatecryptokey_length), sizeof(unsigned int));
-	biprivatekey.write(privatecryptokey, privatecryptokey_length);
-	delete[] privatecryptokey;
-
-	biprivatekey.close();
 
 	return EXIT_SUCCESS;
 }
@@ -126,4 +102,17 @@ void usage()
 	std::cout << "Usage: pbocreatekey [OPTION]..." << std::endl;
 	std::cout << "Options: " << std::endl;
 	std::cout << "\t-an=<NAME>, --authorityname=<NAME>\t\tSet authority NAME" << std::endl;
+}
+
+std::string get_owner()
+{
+	char hostname[HOST_NAME_MAX];
+	char loginname[LOGIN_NAME_MAX];
+
+	gethostname(hostname, HOST_NAME_MAX);
+	getlogin_r(loginname, LOGIN_NAME_MAX);
+
+	std::string owner = std::string(loginname) + "@" + std::string(hostname);
+
+	return owner;
 }

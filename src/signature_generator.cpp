@@ -11,31 +11,29 @@ namespace pbo
 		BIGNUM* bne = BN_new();
 		if(!BN_set_word(bne, RSA_F4))
 		{
+			BN_free(bne);
 			throw std::logic_error("BN_set_word() : failed");
-			BN_free(bne);
 		}
 
-		RSA* keypair = RSA_new();
-		if(!RSA_generate_key_ex(keypair, DEFAULT_BITS, bne, NULL))
+		m_keypair = RSA_new();
+		if(!RSA_generate_key_ex(m_keypair, DEFAULT_BITS, bne, NULL))
 		{
-			throw std::logic_error("RSA_generate_key_ex() : failed");
 			BN_free(bne);
-			RSA_free(keypair);
+			RSA_free(m_keypair);
+			throw std::logic_error("RSA_generate_key_ex() : failed");
 		}
 
-		const BIGNUM *n, *e, *d;
-		const BIGNUM *p, *q;
-		const BIGNUM *dmp1, *dmq1, *iqmp;
+		RSA_get0_key(m_keypair, &m_n, &m_e, &m_d);
+		RSA_get0_factors(m_keypair, &m_p, &m_q);
+		RSA_get0_crt_params(m_keypair, &m_dmp1, &m_dmq1, &m_iqmp);
 
-		RSA_get0_key(keypair, &n, &e, &d);
-		RSA_get0_factors(keypair, &p, &q);
-		RSA_get0_crt_params(keypair, &dmp1, &dmq1, &iqmp);
+		cryptokey private_key(PRIVATEKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PRIVATEKEY_MAGIC, 1024, RSA_F4, m_n, m_p, m_q, m_dmp1, m_dmq1, m_iqmp, m_d);
+		cryptokey public_key(PUBLICKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PUBLICKEY_MAGIC, 1024, RSA_F4, m_n);
 
-		// Public key : n
-		// Private key : n, p, q, dmp1, dmq1, iqmp, d
+		m_private_signature = signature(authorityname, private_key);
+		m_public_signature = signature(authorityname, public_key);
 
 		BN_free(bne);
-		RSA_free(keypair);
 	}
 
 	signature signature_generator::private_signature()
@@ -50,5 +48,6 @@ namespace pbo
 
 	signature_generator::~signature_generator()
 	{
+		RSA_free(m_keypair);
 	}
 }

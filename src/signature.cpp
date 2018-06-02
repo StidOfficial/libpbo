@@ -11,7 +11,7 @@ namespace pbo
 		m_cryptokey = cryptokey();
 	}
 
-	signature::signature(std::string authorityname, ::pbo::cryptokey cryptokey)
+	signature::signature(std::string authorityname, pbo::cryptokey cryptokey)
 	{
 		m_authorityname = authorityname;
 		m_cryptokey = cryptokey;
