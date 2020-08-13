@@ -13,7 +13,6 @@ void usage();
 
 int main(int argc, char **argv)
 {
-	int exit_code = EXIT_SUCCESS;
 	std::string directory_path;
 	std::string pbo_file_path;
 	std::string product_name;
@@ -40,14 +39,14 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	auto pbo = std::make_unique<pbo::pbo>(pbo_file_path);
+	pbo::pbo pbo(pbo_file_path);
 	try
 	{
-		pbo->unpack();
-		size_t entry_count = pbo->size();
+		pbo.unpack();
+		size_t entry_count = pbo.size();
 
 		for(size_t idx(0); idx < entry_count; idx++) {
-			auto entry = pbo->get_entry(idx);
+			auto entry = pbo.get_entry(idx);
 			auto size = entry->get_data_size();
 			auto offset = entry->get_data_offset();
 
@@ -82,10 +81,10 @@ int main(int argc, char **argv)
 	catch(std::exception const &e)
 	{
 		std::cerr << "pbounpack : " << e.what() << std::endl;
-		exit_code = EXIT_FAILURE;
+		return EXIT_FAILURE;
 	}
 
-	return exit_code;
+	return EXIT_SUCCESS;
 }
 
 void usage()

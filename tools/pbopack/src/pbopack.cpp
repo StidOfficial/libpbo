@@ -11,7 +11,6 @@ void usage();
 
 int main(int argc, char **argv)
 {
-	int exit_code = EXIT_SUCCESS;
 	std::string directory_path;
 	std::string file_path;
 	std::string product_name;
@@ -73,14 +72,14 @@ int main(int argc, char **argv)
 	filesystem::path base_dir = directory_path + "/";
 	std::string base_dir_path = base_dir.string();
 
-	pbo::pbo* pbo_file = new pbo::pbo(file_path);
+	pbo::pbo pbo_file(file_path);
 	pbo::entry *product_entry = new pbo::entry();
 	product_entry->set_packing_method(PACKINGMETHOD_VERSION);
 	pbo::productentry *product = product_entry->get_product_entry();
 	product->set_entry_name("prefix");
 	product->set_name(product_name);
 	product->set_version("");
-	pbo_file->add_entry(product_entry);
+	pbo_file.add_entry(product_entry);
 
 	for(auto i = filesystem::recursive_directory_iterator(base_dir); i != filesystem::recursive_directory_iterator(); i++)
 	{
@@ -91,22 +90,21 @@ int main(int argc, char **argv)
 			std::string entry_file_path = i->path().string();
 			file_entry->set_path(entry_file_path.substr(base_dir_path.length()));
 			file_entry->set_file_path(i->path().string());
-			pbo_file->add_entry(file_entry);
+			pbo_file.add_entry(file_entry);
 		}
 	}
 
 	try
 	{
-		pbo_file->pack();
+		pbo_file.pack();
 	}
 	catch(std::exception const &e)
 	{
 		std::cerr << "pbopack : " << e.what() << std::endl;
-		exit_code = EXIT_FAILURE;
+		return EXIT_FAILURE;
 	}
 
-	delete pbo_file;
-	return exit_code;
+	return EXIT_SUCCESS;
 }
 
 void usage()

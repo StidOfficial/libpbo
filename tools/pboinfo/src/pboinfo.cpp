@@ -9,7 +9,6 @@ void usage();
 
 int main(int argc, char **argv)
 {
-	int exit_code = EXIT_SUCCESS;
 	std::string file_path;
 	bool signed_file = true;
 
@@ -35,15 +34,15 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	pbo::pbo* pbo_file = new pbo::pbo(file_path);
-	pbo_file->signed_file(signed_file);
+	pbo::pbo pbo_file(file_path);
+	pbo_file.signed_file(signed_file);
 	try
 	{
-		pbo_file->unpack();
+		pbo_file.unpack();
 
-		for(size_t i = 0; i < pbo_file->size(); i++)
+		for(size_t i = 0; i < pbo_file.size(); i++)
 		{
-			pbo::entry *entry = pbo_file->get_entry(i);
+			pbo::entry *entry = pbo_file.get_entry(i);
 			std::cout << "Packing method: ";
 			switch(entry->get_packing_method())
 			{
@@ -91,22 +90,21 @@ int main(int argc, char **argv)
 			std::cout << std::endl;
 		}
 
-		std::cout << "Type signature: " << ((pbo_file->is_signed()) ? "Signed" : "Unsigned") << std::endl;
-		if(pbo_file->is_signed())
+		std::cout << "Type signature: " << ((pbo_file.is_signed()) ? "Signed" : "Unsigned") << std::endl;
+		if(pbo_file.is_signed())
 		{
-			std::cout << "Signature: " << pbo_file->signature() << std::endl;
-			std::cout << "File signature: " << pbo_file->file_signature() << std::endl;
-			std::cout << "Valid signature: " << ((pbo_file->signature() == pbo_file->file_signature()) ? "true" : "false") << std::endl;
+			std::cout << "Signature: " << pbo_file.signature() << std::endl;
+			std::cout << "File signature: " << pbo_file.file_signature() << std::endl;
+			std::cout << "Valid signature: " << ((pbo_file.signature() == pbo_file.file_signature()) ? "true" : "false") << std::endl;
 		}
 	}
 	catch(std::exception const &e)
 	{
 		std::cerr << "pboinfo: " << e.what() << std::endl;
-		exit_code = EXIT_FAILURE;
+		return EXIT_FAILURE;
 	}
 
-	delete pbo_file;
-	return exit_code;
+	return EXIT_SUCCESS;
 }
 
 void usage()
