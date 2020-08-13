@@ -4,9 +4,9 @@
 
 #define DEFAULT_BITS 1024
 
-namespace pbo
+namespace PBO
 {
-	signature_generator::signature_generator(std::string authorityname)
+	SignatureGenerator::SignatureGenerator(std::string authorityname)
 	{
 		BIGNUM* bne = BN_new();
 		if(!BN_set_word(bne, RSA_F4))
@@ -27,26 +27,26 @@ namespace pbo
 		RSA_get0_factors(m_keypair, &m_p, &m_q);
 		RSA_get0_crt_params(m_keypair, &m_dmp1, &m_dmq1, &m_iqmp);
 
-		cryptokey private_key(PRIVATEKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PRIVATEKEY_MAGIC, 1024, RSA_F4, m_n, m_p, m_q, m_dmp1, m_dmq1, m_iqmp, m_d);
-		cryptokey public_key(PUBLICKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PUBLICKEY_MAGIC, 1024, RSA_F4, m_n);
+		CryptoKey private_key(PRIVATEKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PRIVATEKEY_MAGIC, 1024, RSA_F4, m_n, m_p, m_q, m_dmp1, m_dmq1, m_iqmp, m_d);
+		CryptoKey public_key(PUBLICKEYBLOB, CUR_BLOB_VERSION, 0, CALG_RSA_SIGN, PUBLICKEY_MAGIC, 1024, RSA_F4, m_n);
 
-		m_private_signature = signature(authorityname, private_key);
-		m_public_signature = signature(authorityname, public_key);
+		m_private_signature = Signature(authorityname, private_key);
+		m_public_signature = Signature(authorityname, public_key);
 
 		BN_free(bne);
 	}
 
-	signature signature_generator::private_signature()
+	Signature SignatureGenerator::private_signature()
 	{
 		return m_private_signature;
 	}
 
-	signature signature_generator::public_signature()
+	Signature SignatureGenerator::public_signature()
 	{
 		return m_public_signature;
 	}
 
-	signature_generator::~signature_generator()
+	SignatureGenerator::~SignatureGenerator()
 	{
 		RSA_free(m_keypair);
 	}

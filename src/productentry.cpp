@@ -1,84 +1,51 @@
 #include "productentry.hpp"
 
-#define ENTRY_NAME_INDEX	0
-#define PRODUCT_NAME_INDEX	1
-#define PRODUCT_VERSION_INDEX	2
-
-namespace pbo
+namespace PBO
 {
-	productentry::productentry()
+	ProductEntry::ProductEntry()
+		: std::map<std::string, std::string>()
 	{
 	}
 
-	void productentry::set_entry_name(std::string entry_name)
+	void ProductEntry::set_prefix(std::string prefix)
 	{
-		if(size() > ENTRY_NAME_INDEX)
-			product_data[ENTRY_NAME_INDEX] = entry_name;
-		else
-			add(entry_name);
+		emplace("prefix", prefix);
 	}
 
-	std::string productentry::get_entry_name()
+	std::string ProductEntry::get_prefix()
 	{
-		if(size() > ENTRY_NAME_INDEX)
-			return product_data[ENTRY_NAME_INDEX];
-		else
-			return std::string();
+		auto it = find("prefix");
+		if(it != end())
+			return it->second;
+
+		return std::string();
 	}
 
-	void productentry::set_name(std::string name)
+	void ProductEntry::set_product(std::string product)
 	{
-		if(size() >= PRODUCT_NAME_INDEX)
-			product_data[PRODUCT_NAME_INDEX] = name;
-		else
-			add(name);
+		emplace("product", product);
 	}
 
-	std::string productentry::get_name()
+	std::string ProductEntry::get_product()
 	{
-		if(size() > PRODUCT_NAME_INDEX)
-			return product_data[PRODUCT_NAME_INDEX];
-		else
-			return std::string();
+		auto it = find("product");
+		if(it != end())
+			return it->second;
+
+		return std::string();
 	}
 
-	void productentry::set_version(std::string version)
+	void ProductEntry::set_version(std::string version)
 	{
-		if(size() > PRODUCT_VERSION_INDEX)
-			product_data[PRODUCT_VERSION_INDEX] = version;
-		else
-			add(version);
+		emplace("version", version);
 	}
 
-	std::string productentry::get_version()
+	std::string ProductEntry::get_version()
 	{
-		if(size() > PRODUCT_VERSION_INDEX)
-			return product_data[PRODUCT_VERSION_INDEX];
-		else
-			return std::string();
-	}
+		auto it = find("version");
+		if(it != end())
+			return it->second;
 
-	size_t productentry::size()
-	{
-		return product_data.size();
-	}
-
-	void productentry::add(std::string value)
-	{
-		product_data.resize(product_data.size() + 1);
-		product_data[size() - 1] = value;
-	}
-
-	void productentry::remove(int index)
-	{
-		product_data.erase(product_data.begin(), product_data.begin() + index);
-	}
-
-	std::string productentry::get(int index)
-	{
-		if(size() > static_cast<size_t>(index))
-			return product_data[index];
-		else
-			return std::string();
+		return std::string();
 	}
 }

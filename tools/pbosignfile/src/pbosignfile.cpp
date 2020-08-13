@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
 	try
 	{
-		pbo::signature private_signature(privatekey_path);
+		PBO::Signature private_signature(privatekey_path);
 	}
 	catch(const std::exception& e)
 	{

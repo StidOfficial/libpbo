@@ -1,28 +1,28 @@
 #include "signature.hpp"
 
-namespace pbo
+namespace PBO
 {
-	signature::signature()
+	Signature::Signature()
 	{
 	}
 
-	signature::signature(std::string path)
+	Signature::Signature(std::string path)
 	{
 		m_cryptokey = cryptokey();
 	}
 
-	signature::signature(std::string authorityname, pbo::cryptokey cryptokey)
+	Signature::Signature(std::string authorityname, CryptoKey cryptokey)
 	{
 		m_authorityname = authorityname;
 		m_cryptokey = cryptokey;
 	}
 
-	std::string signature::authorityname()
+	std::string Signature::authorityname()
 	{
 		return m_authorityname;
 	}
 
-	pbo::cryptokey signature::cryptokey()
+	CryptoKey Signature::cryptokey()
 	{
 		return m_cryptokey;
 	}

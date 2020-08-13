@@ -1,5 +1,4 @@
 #include <iostream>
-#include <experimental/filesystem>
 #include <ctime>
 #include <libpbo/pbo.hpp>
 #include <libpbo/productentry.hpp>
@@ -34,15 +33,14 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	pbo::pbo pbo_file(file_path);
+	PBO::PBO pbo_file(file_path);
 	pbo_file.signed_file(signed_file);
 	try
 	{
 		pbo_file.unpack();
 
-		for(size_t i = 0; i < pbo_file.size(); i++)
+		for(auto entry : pbo_file)
 		{
-			pbo::entry *entry = pbo_file.get_entry(i);
 			std::cout << "Packing method: ";
 			switch(entry->get_packing_method())
 			{
@@ -73,17 +71,16 @@ int main(int argc, char **argv)
 			}
 			else if(entry->is_product_entry())
 			{
-				pbo::productentry* product_entry = entry->get_product_entry();
-				if(product_entry)
+				if(entry->get_packing_method() == PACKINGMETHOD_VERSION)
 				{
-					std::cout << "Entry name : " << product_entry->get_entry_name() << std::endl;
-					std::cout << "Product name : " << product_entry->get_name() << std::endl;
-					std::cout << "Product version : " << product_entry->get_version() << std::endl;
+					PBO::ProductEntry productentry = entry->get_product_entry();
+					std::cout << "Prefix : " << productentry.get_prefix() << std::endl;
+					std::cout << "Product name : " << productentry.get_product() << std::endl;
+					std::cout << "Product version : " << productentry.get_version() << std::endl;
 
-					for(size_t i = 3; i < product_entry->size(); i++)
-					{
-						std::cout << "Product data " << i << " : " << product_entry->get(i) << std::endl;
-					}
+					std::cout << "Properties :" << std::endl;
+					for(auto &property : productentry)
+						std::cout << property.first << " : " << property.second << std::endl;
 				}
 			}
 

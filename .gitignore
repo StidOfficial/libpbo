@@ -5,10 +5,12 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 libpbo.so
-pboinfo
-pbopack
-pbounpack
+/pboinfo
+/pbopack
+/pbounpack
 /.vs
+/.vscode
+/build
 /CMakeSettings.json
 *.pbo
 *.bikey

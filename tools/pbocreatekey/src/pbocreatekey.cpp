@@ -5,13 +5,11 @@
 #include <cstring>
 #include <ctime>
 #include <locale>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <unistd.h>
 #include <openssl/md5.h>
 #include <libpbo/cryptokey.hpp>
 #include <libpbo/signature_generator.hpp>
-
-namespace filesystem = std::experimental::filesystem;
 
 void usage();
 std::string get_owner();
@@ -44,14 +42,14 @@ int main(int argc, char **argv)
 
 	try
 	{
-		pbo::signature_generator sign_gen(authorityname);
+		PBO::SignatureGenerator sign_gen(authorityname);
 
 		MD5_CTX md5_biprivatekey, md5_bikey;
 		MD5_Init(&md5_biprivatekey);
 		MD5_Init(&md5_bikey);
 
-		filesystem::path biprivatekey_path = authorityname + ".biprivatekey";
-		std::ofstream biprivatekey(filesystem::absolute(biprivatekey_path).c_str(), std::ios_base::binary);
+		std::filesystem::path biprivatekey_path = authorityname + ".biprivatekey";
+		std::ofstream biprivatekey(std::filesystem::absolute(biprivatekey_path).c_str(), std::ios_base::binary);
 
 		biprivatekey.write(authorityname.c_str(), authorityname.length() + 1);
 		int privatecryptokey_length = sign_gen.private_signature().cryptokey().size();
@@ -64,8 +62,8 @@ int main(int argc, char **argv)
 
 		biprivatekey.close();
 
-		filesystem::path bikey_path = authorityname + ".bikey";
-		std::ofstream bikey(filesystem::absolute(bikey_path).c_str(), std::ios_base::binary);
+		std::filesystem::path bikey_path = authorityname + ".bikey";
+		std::ofstream bikey(std::filesystem::absolute(bikey_path).c_str(), std::ios_base::binary);
 
 		bikey.write(authorityname.c_str(), authorityname.length() + 1);
 		unsigned int publiccryptokey_length = sign_gen.public_signature().cryptokey().size();
@@ -95,14 +93,14 @@ int main(int argc, char **argv)
 		char mdString[MD5_DIGEST_LENGTH * 2];
 
 		std::cout << "== PRIVATE KEY ==" << std::endl;
-		std::cout << "File: " << filesystem::absolute(biprivatekey_path).c_str() << std::endl;
+		std::cout << "File: " << std::filesystem::absolute(biprivatekey_path).c_str() << std::endl;
 		MD5_Final(digest, &md5_bikey);
 		for (int i = 0; i < MD5_DIGEST_LENGTH; i++)
 			sprintf(&mdString[i * 2], "%02x", digest[i]);
 		std::cout << "MD5: " << mdString << std::endl;
 
 		std::cout << "== PUBLIC KEY ==" << std::endl;
-		std::cout << "File: " << filesystem::absolute(bikey_path).c_str() << std::endl;
+		std::cout << "File: " << std::filesystem::absolute(bikey_path).c_str() << std::endl;
 		MD5_Final(digest, &md5_biprivatekey);
 		for (int i = 0; i < MD5_DIGEST_LENGTH; i++)
 			sprintf(&mdString[i * 2], "%02x", digest[i]);

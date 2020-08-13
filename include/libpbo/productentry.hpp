@@ -1,30 +1,23 @@
-#ifndef PRODUCTENTRY_HPP
-#define PRODUCTENTRY_HPP
+#pragma once
 
-#include <vector>
+#include <map>
 #include <string>
+
+#define NULL_PRODUCT_ENTRY	""
 
 #include "pboDll.h"
 
-namespace pbo
+namespace PBO
 {
-	class PBODLL_API productentry
+	class PBODLL_API ProductEntry : public std::map<std::string, std::string>
 	{
 	public:
-		productentry();
-		void set_entry_name(std::string entry_name);
-		std::string get_entry_name();
-		void set_name(std::string name);
-		std::string get_name();
+		ProductEntry();
+		void set_prefix(std::string entry_name);
+		std::string get_prefix();
+		void set_product(std::string product);
+		std::string get_product();
 		void set_version(std::string version);
 		std::string get_version();
-		size_t size();
-		void add(std::string value);
-		void remove(int index);
-		std::string get(int index);
-	private:
-		std::vector<std::string> product_data;
 	};
 }
-
-#endif

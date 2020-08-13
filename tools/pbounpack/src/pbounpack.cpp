@@ -39,14 +39,13 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	pbo::pbo pbo(pbo_file_path);
+	PBO::PBO pbo_file(pbo_file_path);
 	try
 	{
-		pbo.unpack();
-		size_t entry_count = pbo.size();
+		pbo_file.unpack();
 
-		for(size_t idx(0); idx < entry_count; idx++) {
-			auto entry = pbo.get_entry(idx);
+		for(auto entry : pbo_file)
+		{
 			auto size = entry->get_data_size();
 			auto offset = entry->get_data_offset();
 
@@ -54,7 +53,7 @@ int main(int argc, char **argv)
 				std::vector<char> tempstorage(size);
 				std::ifstream input(pbo_file_path, std::ios_base::binary);
 
-				auto outfilename = entry->get_path();
+				auto outfilename = entry->get_path().string();
 				for(auto &character : outfilename)
 					if(character == '\\')
 						character = '/';

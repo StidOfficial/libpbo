@@ -3,9 +3,9 @@
 #include <cstring>
 #include <stdexcept>
 
-namespace pbo
+namespace PBO
 {
-	cryptokey::cryptokey()
+	CryptoKey::CryptoKey()
 	{
 	}
 
@@ -34,7 +34,7 @@ namespace pbo
 		}
 	}*/
 
-	cryptokey::cryptokey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, const BIGNUM *n,
+	CryptoKey::CryptoKey(char type, char version, unsigned short reserved, unsigned int alg_id, unsigned int magic, unsigned int bitlen, unsigned int pubexp, const BIGNUM *n,
 																				const BIGNUM *p,
 																				const BIGNUM *q,
 																				const BIGNUM *dmp1,
@@ -74,42 +74,42 @@ namespace pbo
 		}
 	}
 
-	void cryptokey::set_n(const BIGNUM *n)
+	void CryptoKey::set_n(const BIGNUM *n)
 	{
 		m_n = n;
 	}
 
-	void cryptokey::set_p(const BIGNUM *p)
+	void CryptoKey::set_p(const BIGNUM *p)
 	{
 		m_p = p;
 	}
 
-	void cryptokey::set_q(const BIGNUM *q)
+	void CryptoKey::set_q(const BIGNUM *q)
 	{
 		m_q = q;
 	}
 
-	void cryptokey::set_dmp1(const BIGNUM *dmp1)
+	void CryptoKey::set_dmp1(const BIGNUM *dmp1)
 	{
 		m_dmp1 = dmp1;
 	}
 
-	void cryptokey::set_dmq1(const BIGNUM *dmq1)
+	void CryptoKey::set_dmq1(const BIGNUM *dmq1)
 	{
 		m_dmq1 = dmq1;
 	}
 
-	void cryptokey::set_iqmp(const BIGNUM *iqmp)
+	void CryptoKey::set_iqmp(const BIGNUM *iqmp)
 	{
 		m_iqmp = iqmp;
 	}
 
-	void cryptokey::set_d(const BIGNUM *d)
+	void CryptoKey::set_d(const BIGNUM *d)
 	{
 		m_d = d;
 	}
 
-	int cryptokey::size()
+	int CryptoKey::size()
 	{
 		switch(m_blobheader.type)
 		{
@@ -128,7 +128,7 @@ namespace pbo
 		}
 	}
 
-	char* cryptokey::data()
+	char* CryptoKey::data()
 	{
 		if(size() < 0)
 			return NULL;
@@ -179,7 +179,7 @@ namespace pbo
 		return buffer;
 	}
 
-	cryptokey::~cryptokey()
+	CryptoKey::~CryptoKey()
 	{
 		
 	}

@@ -1,11 +1,9 @@
-#include <experimental/filesystem>
+#include <filesystem>
 #include <cstring>
 #include <cerrno>
 #include <iostream>
 #include <libpbo/pbo.hpp>
 #include <cstdlib>
-
-namespace filesystem = std::experimental::filesystem;
 
 void usage();
 
@@ -13,8 +11,8 @@ int main(int argc, char **argv)
 {
 	std::string directory_path;
 	std::string file_path;
-	std::string product_name;
-	std::string product_version;
+	std::string product_name = "";
+	std::string product_version = "";
 
 	for(int i = 1;i < argc; i++)
 	{
@@ -51,13 +49,13 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	if(!filesystem::exists(directory_path))
+	if(!std::filesystem::exists(directory_path))
 	{
 		std::cerr << "pbopack: " << directory_path << ": " << std::strerror(ENOENT) << std::endl;
 		return EXIT_FAILURE;
 	}
 
-	if(!filesystem::is_directory(directory_path))
+	if(!std::filesystem::is_directory(directory_path))
 	{
 		std::cerr << "pbopack: " << directory_path << ": " << std::strerror(ENOTDIR) << std::endl;
 		return EXIT_FAILURE;
@@ -65,32 +63,33 @@ int main(int argc, char **argv)
 
 	if(product_name.empty())
 	{
-		filesystem::path filesystem_path = file_path;
+		std::filesystem::path filesystem_path = file_path;
 		product_name = filesystem_path.filename().generic_string();
 	}
 
-	filesystem::path base_dir = directory_path + "/";
+	std::filesystem::path base_dir = directory_path + "/";
 	std::string base_dir_path = base_dir.string();
 
-	pbo::pbo pbo_file(file_path);
-	pbo::entry *product_entry = new pbo::entry();
+	PBO::PBO pbo_file(file_path);
+	PBO::Entry *product_entry = new PBO::Entry();
 	product_entry->set_packing_method(PACKINGMETHOD_VERSION);
-	pbo::productentry *product = product_entry->get_product_entry();
-	product->set_entry_name("prefix");
-	product->set_name(product_name);
-	product->set_version("");
-	pbo_file.add_entry(product_entry);
+	product_entry->get_product_entry().set_prefix("a3");
+	product_entry->get_product_entry().set_product(product_name);
+	product_entry->get_product_entry().set_version(product_version);
 
-	for(auto i = filesystem::recursive_directory_iterator(base_dir); i != filesystem::recursive_directory_iterator(); i++)
+	pbo_file.emplace_back(product_entry);
+
+	for(auto i = std::filesystem::recursive_directory_iterator(base_dir); i != std::filesystem::recursive_directory_iterator(); i++)
 	{
-		if(!filesystem::is_directory(i->status()))
+		if(!std::filesystem::is_directory(i->status()))
 		{
-			pbo::entry* file_entry = new pbo::entry();
+			PBO::Entry* file_entry = new PBO::Entry();
 			file_entry->set_packing_method(PACKINGMETHOD_UNCOMPRESSED);
 			std::string entry_file_path = i->path().string();
 			file_entry->set_path(entry_file_path.substr(base_dir_path.length()));
 			file_entry->set_file_path(i->path().string());
-			pbo_file.add_entry(file_entry);
+
+			pbo_file.emplace_back(file_entry);
 		}
 	}
 
@@ -111,6 +110,6 @@ void usage()
 {
 	std::cout << "Usage: pbopack [OPTION]... [DIRECTORY] [FILE]" << std::endl;
 	std::cout << "Options :" << std::endl;
-	std::cout << "\t--name<NAME>\t\tSet product name" << std::endl;
-	std::cout << "\t--version<VERSION>\tSet product version" << std::endl;
+	std::cout << "\t--name=<NAME>\t\tSet product name" << std::endl;
+	std::cout << "\t--version=<VERSION>\tSet product version" << std::endl;
 }
