@@ -19,6 +19,34 @@
 
 namespace PBO
 {
+	enum PackingMethod
+	{
+		Uncompressed = PACKINGMETHOD_UNCOMPRESSED,
+		Compressed = PACKINGMETHOD_COMPRESSED,
+		Version = PACKINGMETHOD_VERSION,
+		Encrypted = PACKINGMETHOD_ENCRYPTED,
+		Null = PACKINGMETHOD_NULL
+	};
+
+	inline std::string to_string(PackingMethod packing_method)
+	{
+		switch(packing_method)
+		{
+			case Uncompressed:
+				return "Uncompressed";
+			case Compressed:
+				return "Compressed";
+			case Version:
+				return "Version";
+			case Encrypted:
+				return "Encrypted";
+			case Null:
+				return "Null";
+			default:
+				return "Unknown";
+		}
+	}
+
 	class PBODLL_API Entry
 	{
 	public:
