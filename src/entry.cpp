@@ -28,6 +28,9 @@ namespace PBO
 
 	void Entry::set_path(std::filesystem::path path)
 	{
+		if(path.string().length() > ENTRY_PATH_LEN)
+			throw std::length_error("Invalid path length");
+
 		m_path = path;
 	}
 
