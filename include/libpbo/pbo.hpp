@@ -16,12 +16,14 @@ namespace PBO
 	{
 	public:
 		PBO(std::filesystem::path file_path, bool signed_file = true);
+		PBO(bool signed_file = true);
 		~PBO();
 
 		void signed_file(bool signed_file);
 		bool is_signed();
 		std::string &signature();
 		std::string &file_signature();
+		void open(std::filesystem::path file_path);
 
 		void pack();
 		void unpack();

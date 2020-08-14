@@ -11,13 +11,15 @@
 namespace PBO
 {
 	PBO::PBO(std::filesystem::path file_path, bool signed_file)
+		: PBO(signed_file)
+	{
+		open(file_path);
+	}
+
+	PBO::PBO(bool signed_file)
 		: std::vector<std::shared_ptr<Entry>>(), m_file()
 	{
-		m_path = file_path;
 		m_signed = signed_file;
-
-		if(m_path.extension() == ".ebo")
-			std::cout << "WARNING : .ebo is encrypted file" << std::endl;
 	}
 
 	void PBO::signed_file(bool signed_file)
@@ -52,6 +54,25 @@ namespace PBO
 	std::string &PBO::file_signature()
 	{
 		return m_file_checksum;
+	}
+
+	void PBO::open(std::filesystem::path file_path)
+	{
+		m_path = file_path;
+
+		if(m_path.extension() == ".ebo")
+			std::cout << "WARNING : .ebo is encrypted file" << std::endl;
+
+		m_file.close();
+
+		clear();
+
+		if(is_signed())
+			if(!SHA1_Init(&m_sha_context))
+				throw std::logic_error("Failed to intialize SHA1");
+
+		if(std::filesystem::is_directory(m_path))
+			throw std::logic_error(std::strerror(EISDIR));
 	}
 
 	void PBO::read(Entry* &entry)
@@ -205,13 +226,6 @@ namespace PBO
 
 	void PBO::pack()
 	{
-		if(is_signed())
-			if(!SHA1_Init(&m_sha_context))
-				throw std::logic_error("Failed to intialize SHA1");
-
-		if(std::filesystem::is_directory(m_path))
-			throw std::logic_error(std::strerror(EISDIR));
-
 		m_file.open(m_path, std::ofstream::out | std::ofstream::binary);
 		if(!m_file.is_open())
 			throw std::logic_error(std::strerror(errno));
@@ -264,13 +278,6 @@ namespace PBO
 
 	void PBO::unpack()
 	{
-		if(is_signed())
-			if(!SHA1_Init(&m_sha_context))
-				throw std::logic_error("Failed to intialize SHA1");
-
-		if(std::filesystem::is_directory(m_path))
-			throw std::logic_error(std::strerror(EISDIR));
-
 		m_file.open(m_path, std::fstream::in | std::fstream::binary);
 		if(!m_file.is_open())
 			throw std::logic_error(std::strerror(errno));
