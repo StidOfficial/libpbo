@@ -22,6 +22,11 @@ namespace PBO
 		m_signed = signed_file;
 	}
 
+	std::filesystem::path PBO::get_path()
+	{
+		return m_path;
+	}
+
 	void PBO::signed_file(bool signed_file)
 	{
 		m_signed = signed_file;

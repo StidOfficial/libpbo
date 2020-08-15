@@ -19,6 +19,7 @@ namespace PBO
 		PBO(bool signed_file = true);
 		~PBO();
 
+		std::filesystem::path get_path();
 		void signed_file(bool signed_file);
 		bool is_signed();
 		std::string &signature();
