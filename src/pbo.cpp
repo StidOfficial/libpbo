@@ -113,7 +113,7 @@ namespace PBO
 
 		switch(entry->get_packing_method())
 		{
-			case PACKINGMETHOD_VERSION:
+			case PackingMethod::Version:
 			{
 				do
 				{
@@ -137,11 +137,12 @@ namespace PBO
 
 				break;
 			}
-			case PACKINGMETHOD_UNCOMPRESSED:
+			case PackingMethod::Uncompressed:
 				break;
-			case PACKINGMETHOD_COMPRESSED:
-			case PACKINGMETHOD_ENCRYPTED:
-				std::cout << "WARNING : Compressed and encrypted method is unavailable for entry " << entry->get_path() << " !" << std::endl;
+			case PackingMethod::Compressed:
+				break;
+			case PackingMethod::Encrypted:
+				std::cout << "WARNING : Encrypted method is unavailable for entry " << entry->get_path() << " !" << std::endl;
 				break;
 			default:
 				std::cout << "WARNING : Unsupported packing method (" << entry->get_packing_method() << ") !" << std::endl;
@@ -181,7 +182,7 @@ namespace PBO
 
 		switch(entry->get_packing_method())
 		{
-			case PACKINGMETHOD_VERSION:
+			case PackingMethod::Version:
 			{
 				for(auto &product_entry : entry->get_product_entry())
 				{
@@ -199,10 +200,10 @@ namespace PBO
 				write(NULL_PRODUCT_ENTRY);
 				break;
 			}
-			case PACKINGMETHOD_UNCOMPRESSED:
+			case PackingMethod::Uncompressed:
 				break;
-			case PACKINGMETHOD_COMPRESSED:
-			case PACKINGMETHOD_ENCRYPTED:
+			case PackingMethod::Compressed:
+			case PackingMethod::Encrypted:
 				throw std::logic_error("Packed method is unavailable !");
 				break;
 			default:
@@ -249,7 +250,7 @@ namespace PBO
 		{
 			switch(entry->get_packing_method())
 			{
-				case PACKINGMETHOD_UNCOMPRESSED:
+				case PackingMethod::Uncompressed:
 				{
 					std::ifstream entryFile;
 					entryFile.open(entry->get_file_path(), std::ifstream::in | std::ifstream::binary);

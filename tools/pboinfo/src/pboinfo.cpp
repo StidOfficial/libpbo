@@ -44,16 +44,19 @@ int main(int argc, char **argv)
 			std::cout << "Packing method: ";
 			switch(entry->get_packing_method())
 			{
-				case PACKINGMETHOD_NULL:
+				case PBO::PackingMethod::Null:
 					std::cout << "Null method" << std::endl;
 					break;
-				case PACKINGMETHOD_UNCOMPRESSED:
+				case PBO::PackingMethod::Uncompressed:
 					std::cout << "Uncompressed" << std::endl;
 					break;
-				case PACKINGMETHOD_COMPRESSED:
+				case PBO::PackingMethod::Compressed:
 					std::cout << "Compressed" << std::endl;
 					break;
-				case PACKINGMETHOD_VERSION:
+				case PBO::PackingMethod::Encrypted:
+					std::cout << "Encrypted" << std::endl;
+					break;
+				case PBO::PackingMethod::Version:
 					std::cout << "Version" << std::endl;
 					break;
 				default:
@@ -71,17 +74,14 @@ int main(int argc, char **argv)
 			}
 			else if(entry->is_product_entry())
 			{
-				if(entry->get_packing_method() == PACKINGMETHOD_VERSION)
-				{
-					PBO::ProductEntry productentry = entry->get_product_entry();
-					std::cout << "Prefix : " << productentry.get_prefix() << std::endl;
-					std::cout << "Product name : " << productentry.get_product() << std::endl;
-					std::cout << "Product version : " << productentry.get_version() << std::endl;
+				PBO::ProductEntry productentry = entry->get_product_entry();
+				std::cout << "Prefix : " << productentry.get_prefix() << std::endl;
+				std::cout << "Product name : " << productentry.get_product() << std::endl;
+				std::cout << "Product version : " << productentry.get_version() << std::endl;
 
-					std::cout << "Properties :" << std::endl;
-					for(auto &property : productentry)
-						std::cout << property.first << " : " << property.second << std::endl;
-				}
+				std::cout << "Properties :" << std::endl;
+				for(auto &property : productentry)
+					std::cout << property.first << " : " << property.second << std::endl;
 			}
 
 			std::cout << std::endl;

@@ -3,7 +3,7 @@
 namespace PBO
 {
 	Entry::Entry()
-		: m_packing_method(PACKINGMETHOD_NULL), m_original_size(0), m_reserved(0),
+		: m_packing_method(PBO::PackingMethod::Null), m_original_size(0), m_reserved(0),
 			m_timestamp(0), m_data_size(0), m_data_offset(-1)
 	{
 	}
@@ -106,19 +106,20 @@ namespace PBO
 
 	bool Entry::is_product_entry()
 	{
-		return get_packing_method() == PACKINGMETHOD_VERSION;
+		return get_packing_method() == PBO::PackingMethod::Version;
 	}
 
 	bool Entry::is_file_entry()
 	{
-		return get_packing_method() == PACKINGMETHOD_UNCOMPRESSED ||
-			get_packing_method() == PACKINGMETHOD_COMPRESSED;
+		return get_packing_method() == PBO::PackingMethod::Uncompressed ||
+			get_packing_method() == PBO::PackingMethod::Compressed ||
+			get_packing_method() == PBO::PackingMethod::Encrypted;
 	}
 
 	bool Entry::is_zero_entry()
 	{
 		return m_path.string().length() == 0 &&
-			(m_packing_method == 0 || m_packing_method == PACKINGMETHOD_COMPRESSED) &&
+			m_packing_method == 0 &&
 			m_original_size == 0 &&
 			m_reserved == 0 &&
 			m_timestamp == 0 &&

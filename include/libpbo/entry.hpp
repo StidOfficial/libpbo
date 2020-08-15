@@ -9,23 +9,17 @@
 #include "pboDll.h"
 #include "productentry.hpp"
 
-#define ENTRY_PATH_LEN				128-20
-
-#define PACKINGMETHOD_UNCOMPRESSED	0x0
-#define PACKINGMETHOD_COMPRESSED	0x43707273
-#define PACKINGMETHOD_VERSION		0x56657273
-#define PACKINGMETHOD_ENCRYPTED		0x456e6372
-#define PACKINGMETHOD_NULL			0xffffffff
+#define ENTRY_PATH_LEN	128-20
 
 namespace PBO
 {
 	enum PackingMethod
 	{
-		Uncompressed = PACKINGMETHOD_UNCOMPRESSED,
-		Compressed = PACKINGMETHOD_COMPRESSED,
-		Version = PACKINGMETHOD_VERSION,
-		Encrypted = PACKINGMETHOD_ENCRYPTED,
-		Null = PACKINGMETHOD_NULL
+		Uncompressed = 0x0,
+		Compressed = 0x43707273,
+		Version = 0x56657273,
+		Encrypted = 0x456e6372,
+		Null = 0xffffffff
 	};
 
 	inline std::string to_string(PackingMethod packing_method)

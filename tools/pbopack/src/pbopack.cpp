@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
 	PBO::PBO pbo_file(file_path);
 	PBO::Entry *product_entry = new PBO::Entry();
-	product_entry->set_packing_method(PACKINGMETHOD_VERSION);
+	product_entry->set_packing_method(PBO::PackingMethod::Version);
 	product_entry->get_product_entry().set_prefix("a3");
 	product_entry->get_product_entry().set_product(product_name);
 	product_entry->get_product_entry().set_version(product_version);
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 		if(!std::filesystem::is_directory(i->status()))
 		{
 			PBO::Entry* file_entry = new PBO::Entry();
-			file_entry->set_packing_method(PACKINGMETHOD_UNCOMPRESSED);
+			file_entry->set_packing_method(PBO::PackingMethod::Uncompressed);
 			std::string entry_file_path = i->path().string();
 			file_entry->set_path(entry_file_path.substr(base_dir_path.length()));
 			file_entry->set_file_path(i->path().string());
