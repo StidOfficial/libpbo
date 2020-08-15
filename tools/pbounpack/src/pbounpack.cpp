@@ -73,7 +73,10 @@ int main(int argc, char **argv)
 					input.seekg(offset);
 					input.read(tempstorage.data(), size);
 					out.write(tempstorage.data(), size);
+					out.close();
 				}
+
+				input.close();
 			}
 		}
 	}
