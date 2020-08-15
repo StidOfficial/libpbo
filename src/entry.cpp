@@ -99,12 +99,12 @@ namespace PBO
 		return m_data_offset;
 	}
 
-	ProductEntry &Entry::get_product_entry()
+	Properties &Entry::get_properties()
 	{
-		return m_product_entry;
+		return m_properties;
 	}
 
-	bool Entry::is_product_entry()
+	bool Entry::is_version_entry()
 	{
 		return get_packing_method() == PBO::PackingMethod::Version;
 	}

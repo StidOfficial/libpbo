@@ -11,7 +11,7 @@ set(LIBPBO_SRCS
 	src/cryptokey.cpp
 	src/entry.cpp
 	src/pbo.cpp
-	src/productentry.cpp
+	src/properties.cpp
 	src/signature.cpp
 	src/signature_generator.cpp
 )

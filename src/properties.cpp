@@ -1,18 +1,18 @@
-#include "productentry.hpp"
+#include "properties.hpp"
 
 namespace PBO
 {
-	ProductEntry::ProductEntry()
+	Properties::Properties()
 		: std::map<std::string, std::string>()
 	{
 	}
 
-	void ProductEntry::set_prefix(std::string prefix)
+	void Properties::set_prefix(std::string prefix)
 	{
 		emplace("prefix", prefix);
 	}
 
-	std::string ProductEntry::get_prefix()
+	std::string Properties::get_prefix()
 	{
 		auto it = find("prefix");
 		if(it != end())
@@ -21,12 +21,12 @@ namespace PBO
 		return std::string();
 	}
 
-	void ProductEntry::set_product(std::string product)
+	void Properties::set_product(std::string product)
 	{
 		emplace("product", product);
 	}
 
-	std::string ProductEntry::get_product()
+	std::string Properties::get_product()
 	{
 		auto it = find("product");
 		if(it != end())
@@ -35,12 +35,12 @@ namespace PBO
 		return std::string();
 	}
 
-	void ProductEntry::set_version(std::string version)
+	void Properties::set_version(std::string version)
 	{
 		emplace("version", version);
 	}
 
-	std::string ProductEntry::get_version()
+	std::string Properties::get_version()
 	{
 		auto it = find("version");
 		if(it != end())

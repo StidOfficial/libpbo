@@ -7,7 +7,7 @@
 #include <filesystem>
 
 #include "pboDll.h"
-#include "productentry.hpp"
+#include "properties.hpp"
 
 #define ENTRY_PATH_LEN	128-20
 
@@ -62,8 +62,8 @@ namespace PBO
 		int get_data_size();
 		void set_data_offset(std::streampos data_offset);
 		std::streampos get_data_offset();
-		ProductEntry &get_product_entry();
-		bool is_product_entry();
+		Properties &get_properties();
+		bool is_version_entry();
 		bool is_file_entry();
 		bool is_zero_entry();
 	private:
@@ -75,6 +75,6 @@ namespace PBO
 		uint32_t m_timestamp;
 		uint32_t m_data_size;
 		std::streampos m_data_offset;
-		ProductEntry m_product_entry;
+		Properties m_properties;
 	};
 }

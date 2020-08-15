@@ -73,9 +73,9 @@ int main(int argc, char **argv)
 	PBO::PBO pbo_file(file_path);
 	PBO::Entry *product_entry = new PBO::Entry();
 	product_entry->set_packing_method(PBO::PackingMethod::Version);
-	product_entry->get_product_entry().set_prefix("a3");
-	product_entry->get_product_entry().set_product(product_name);
-	product_entry->get_product_entry().set_version(product_version);
+	product_entry->get_properties().set_prefix("a3");
+	product_entry->get_properties().set_product(product_name);
+	product_entry->get_properties().set_version(product_version);
 
 	pbo_file.emplace_back(product_entry);
 

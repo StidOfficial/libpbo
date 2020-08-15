@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <libpbo/pbo.hpp>
-#include <libpbo/productentry.hpp>
+#include <libpbo/properties.hpp>
 #include <cstdlib>
 
 void usage();
@@ -72,15 +72,15 @@ int main(int argc, char **argv)
 				std::cout << "Timestamp: " << std::ctime(&timestamp);
 				std::cout << "Data size: " << entry->get_data_size() << " bytes" << std::endl;
 			}
-			else if(entry->is_product_entry())
+			else if(entry->is_version_entry())
 			{
-				PBO::ProductEntry productentry = entry->get_product_entry();
-				std::cout << "Prefix : " << productentry.get_prefix() << std::endl;
-				std::cout << "Product name : " << productentry.get_product() << std::endl;
-				std::cout << "Product version : " << productentry.get_version() << std::endl;
+				PBO::Properties properties = entry->get_properties();
+				std::cout << "Prefix : " << properties.get_prefix() << std::endl;
+				std::cout << "Product name : " << properties.get_product() << std::endl;
+				std::cout << "Product version : " << properties.get_version() << std::endl;
 
 				std::cout << "Properties :" << std::endl;
-				for(auto &property : productentry)
+				for(auto &property : properties)
 					std::cout << property.first << " : " << property.second << std::endl;
 			}
 

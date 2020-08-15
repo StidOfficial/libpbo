@@ -3,16 +3,16 @@
 #include <map>
 #include <string>
 
-#define NULL_PRODUCT_ENTRY	""
+#define NULL_PROPERTY	""
 
 #include "pboDll.h"
 
 namespace PBO
 {
-	class PBODLL_API ProductEntry : public std::map<std::string, std::string>
+	class PBODLL_API Properties : public std::map<std::string, std::string>
 	{
 	public:
-		ProductEntry();
+		Properties();
 		void set_prefix(std::string entry_name);
 		std::string get_prefix();
 		void set_product(std::string product);

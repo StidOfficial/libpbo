@@ -125,7 +125,7 @@ namespace PBO
 					if(property_value.empty())
 						break;
 
-					entry->get_product_entry().emplace(property_key, property_value);
+					entry->get_properties().emplace(property_key, property_value);
 					
 					property_key = "";
 					property_value = "";
@@ -133,7 +133,7 @@ namespace PBO
 				while(true);
 
 				if(!property_key.empty())
-					entry->get_product_entry().emplace(property_key, property_value);
+					entry->get_properties().emplace(property_key, property_value);
 
 				break;
 			}
@@ -184,7 +184,7 @@ namespace PBO
 		{
 			case PackingMethod::Version:
 			{
-				for(auto &product_entry : entry->get_product_entry())
+				for(auto &product_entry : entry->get_properties())
 				{
 					if(product_entry.first.empty())
 						break;
@@ -197,7 +197,7 @@ namespace PBO
 					write(product_entry.second);
 				}
 
-				write(NULL_PRODUCT_ENTRY);
+				write(NULL_PROPERTY);
 				break;
 			}
 			case PackingMethod::Uncompressed:
