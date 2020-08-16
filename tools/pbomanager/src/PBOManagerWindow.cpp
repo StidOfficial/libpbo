@@ -11,7 +11,8 @@ PBOManagerWindow::PBOManagerWindow()
   set_title("PBO Manager");
   set_default_size(800, 600);
 
-  //set_default_icon_name("lol");
+  set_icon(Gdk::Pixbuf::create_from_resource("/res/icons/icon_256.png"));
+  set_wmclass("PBOManager", "PBO Manager");
 
   m_buttonOpen.signal_clicked().connect(sigc::mem_fun(*this, &PBOManagerWindow::on_open_clicked));
   m_headerBar.pack_start(m_buttonOpen);
@@ -187,7 +188,6 @@ bool PBOManagerWindow::on_treeview_button_release_event(GdkEventButton *button_e
 void PBOManagerWindow::on_extract_entry()
 {
   PBO::Entry *entry = get_selected_entry();
-  std::cout << entry << std::endl;
 
   Gtk::FileChooserDialog dialog("Save as",
           Gtk::FILE_CHOOSER_ACTION_SAVE);

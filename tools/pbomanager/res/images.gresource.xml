@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+	<gresource prefix="/res/">
+		<file>pbomanager.png</file>
+	</gresource>
+    <gresource prefix="/res/icons/">
+        <file>icon_16.png</file>
+        <file>icon_32.png</file>
+        <file>icon_48.png</file>
+		<file>icon_256.png</file>
+        <file>icon_512.png</file>
+	</gresource>
+</gresources>

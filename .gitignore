@@ -15,3 +15,4 @@ libpbo.so
 *.pbo
 *.bikey
 *.biprivatekey
+resources.c
