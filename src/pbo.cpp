@@ -122,8 +122,6 @@ namespace PBO
 						break;
 
 					read(property_value);
-					if(property_value.empty())
-						break;
 
 					entry->get_properties().emplace(property_key, property_value);
 					
@@ -330,7 +328,7 @@ namespace PBO
 				else
 					read(signatureData, leftDataLength);
 
-				leftDataLength = leftDataLength - SIGNATURE_BUFFER_SIZE;
+				leftDataLength -= SIGNATURE_BUFFER_SIZE;
 			}
 		}
 
