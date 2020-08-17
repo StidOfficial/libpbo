@@ -9,6 +9,7 @@ find_package(PkgConfig)
 set(EXECUTABLE_OUTPUT_PATH bin/)
 set(LIBRARY_OUTPUT_PATH bin/)
 set(LIBPBO_SRCS
+	src/compress.cpp
 	src/cryptokey.cpp
 	src/entry.cpp
 	src/pbo.cpp

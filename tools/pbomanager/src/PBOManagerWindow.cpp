@@ -1,6 +1,7 @@
 #include "PBOManagerWindow.hpp"
 
 #include <cstring>
+#include <libpbo/compress.hpp>
 
 #include <iostream>
 
@@ -216,7 +217,7 @@ void PBOManagerWindow::on_extract_entry()
           std::vector<char> buffer(entry->get_data_size());
           std::ifstream input(m_pbo.get_path(), std::ios_base::binary);
 
-          std::ofstream output(dialog.get_current_name(), std::ios_base::binary);
+          std::ofstream output(dialog.get_filename(), std::ios_base::binary);
           input.seekg(entry->get_data_offset());
           input.read(buffer.data(), buffer.size());
           output.write(buffer.data(), buffer.size());
@@ -227,7 +228,24 @@ void PBOManagerWindow::on_extract_entry()
           break;
         }
         case PBO::PackingMethod::Compressed:
+        {
+          std::vector<char> inputbuffer(entry->get_data_size());
+          std::vector<char> buffer;
+
+          std::ifstream input(m_pbo.get_path(), std::ios_base::binary);
+          input.seekg(entry->get_data_offset());
+
+          PBO::Compress compress;
+          compress.Decode(buffer, entry->get_original_size(), input);
+
+          std::ofstream output(dialog.get_filename(), std::ios_base::binary);
+          output.write(buffer.data(), buffer.size());
+          output.close();
+
+          input.close();
+
           break;
+        }
       }
       break;
     }
