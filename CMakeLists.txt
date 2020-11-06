@@ -39,7 +39,7 @@ add_executable(pbounpack tools/pbounpack/src/pbounpack.cpp)
 add_executable(pbocreatekey tools/pbocreatekey/src/pbocreatekey.cpp)
 add_executable(pbosignfile tools/pbosignfile/src/pbosignfile.cpp)
 add_executable(pbocheck tools/pbocheck/src/pbocheck.cpp)
-add_executable(pbomanager tools/pbomanager/src/pbomanager.cpp tools/pbomanager/src/PBOManagerWindow.cpp tools/pbomanager/src/PBOManagerProperties.cpp tools/pbomanager/src/resources.c)
+add_executable(pbomanager tools/pbomanager/src/pbomanager.cpp tools/pbomanager/src/PBOManagerWindow.cpp tools/pbomanager/src/PBOManagerProperties.cpp tools/pbomanager/src/resources.cpp)
 
 target_include_directories(pbo PUBLIC include PRIVATE include/libpbo)
 if(MSVC)
@@ -60,7 +60,7 @@ else()
 	target_link_libraries(pbomanager stdc++fs pbo ${GTKMM_LIBRARIES})
 endif()
 
-execute_process(COMMAND glib-compile-resources --sourcedir ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/ --sourcedir ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/icons --target=${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/src/resources.c --generate-source ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/images.gresource.xml)
+execute_process(COMMAND glib-compile-resources --sourcedir ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/ --sourcedir ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/icons --target=${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/src/resources.cpp --generate-source ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/images.gresource.xml)
 
 target_link_libraries(pbocreatekey OpenSSL::Crypto pbo)
 target_link_libraries(pbosignfile OpenSSL::Crypto pbo)
