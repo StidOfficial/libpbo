@@ -15,7 +15,14 @@ namespace std {
 #else
 #error "No filesystem header found !"
 #endif
+#if _MSC_VER
+#include <Windows.h>
+#include <lmcons.h>
+#define HOST_NAME_MAX UNLEN + 1
+#define LOGIN_NAME_MAX UNLEN + 1
+#else
 #include <unistd.h>
+#endif
 #include <openssl/md5.h>
 #include <libpbo/cryptokey.hpp>
 #include <libpbo/signature_generator.hpp>
@@ -135,8 +142,16 @@ std::string get_owner()
 	char hostname[HOST_NAME_MAX];
 	char loginname[LOGIN_NAME_MAX];
 
+#if _MSC_VER
+	DWORD hostname_len = HOST_NAME_MAX;
+	DWORD loginname_len = LOGIN_NAME_MAX;
+
+	GetComputerName(hostname, &hostname_len);
+	GetUserName(loginname, &loginname_len);
+#else
 	gethostname(hostname, HOST_NAME_MAX);
 	getlogin_r(loginname, LOGIN_NAME_MAX);
+#endif
 
 	std::string owner = std::string(loginname) + "@" + std::string(hostname);
 
