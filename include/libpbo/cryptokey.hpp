@@ -12,6 +12,9 @@
 #define SIMPLEBLOB					0x1
 #define SYMMETRICWRAPKEYBLOB		0xB
 
+#if _MSC_VER
+#include <Windows.h>
+#else
 #define CUR_BLOB_VERSION			0x2
 
 #define CALG_3DES					0x00006603
@@ -64,6 +67,7 @@
 #define CALG_TEK					0x0000660b
 #define CALG_TLS1_MASTER			0x00004c06
 #define CALG_TLS1PRF				0x0000800a
+#endif
 
 #define PUBLICKEY_MAGIC				0x31415352
 #define PRIVATEKEY_MAGIC			0x32415352
