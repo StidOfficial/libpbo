@@ -4,7 +4,16 @@
 #include <ctime>
 #include <cstdint>
 #include <ios>
+#if __has_include(<filesystem>)
 #include <filesystem>
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace std {
+	namespace filesystem = std::experimental::filesystem;
+}
+#else
+#error "No filesystem header found !"
+#endif
 
 #include "pboDll.h"
 #include "properties.hpp"

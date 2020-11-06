@@ -5,7 +5,16 @@
 #include <fstream>
 #include <openssl/sha.h>
 #include <openssl/crypto.h>
+#if __has_include(<filesystem>)
 #include <filesystem>
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace std {
+	namespace filesystem = std::experimental::filesystem;
+}
+#else
+#error "No filesystem header found !"
+#endif
 
 #include "pboDll.h"
 #include "entry.hpp"

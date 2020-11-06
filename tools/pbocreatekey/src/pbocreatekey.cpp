@@ -5,7 +5,16 @@
 #include <cstring>
 #include <ctime>
 #include <locale>
+#if __has_include(<filesystem>)
 #include <filesystem>
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+namespace std {
+	namespace filesystem = std::experimental::filesystem;
+}
+#else
+#error "No filesystem header found !"
+#endif
 #include <unistd.h>
 #include <openssl/md5.h>
 #include <libpbo/cryptokey.hpp>

@@ -1,4 +1,3 @@
-#include <experimental/filesystem>
 #include <memory>
 #include <cstring>
 #include <cerrno>
@@ -6,8 +5,6 @@
 #include <libpbo/pbo.hpp>
 #include <cstdlib>
 #include <fstream>
-
-namespace filesystem = std::experimental::filesystem;
 
 void usage();
 
@@ -59,12 +56,12 @@ int main(int argc, char **argv)
 						character = '/';
 
 				if(!outfilename.empty()) {
-					auto fullpath = filesystem::path(outfilename);
+					auto fullpath = std::filesystem::path(outfilename);
 					auto filepath = fullpath.parent_path();
 
-					if(!filepath.empty() &&  !filesystem::exists(filepath)) {
+					if(!filepath.empty() &&  !std::filesystem::exists(filepath)) {
 						std::cout << "Creating " << filepath << "\n";
-						filesystem::create_directories(filepath);
+						std::filesystem::create_directories(filepath);
 					}
 
 					std::cout << "Writing file " << outfilename << "\n";

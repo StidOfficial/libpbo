@@ -4,7 +4,6 @@
 
 #include <gtkmm.h>
 #include <libpbo/pbo.hpp>
-#include <filesystem>
 #include <memory>
 
 class PBOManagerWindow : public Gtk::Window
