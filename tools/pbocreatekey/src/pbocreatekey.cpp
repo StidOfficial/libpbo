@@ -15,7 +15,7 @@ namespace std {
 #else
 #error "No filesystem header found !"
 #endif
-#if _MSC_VER
+#if _WIN32 || _WIN64
 #include <Windows.h>
 #include <lmcons.h>
 #define HOST_NAME_MAX UNLEN + 1
@@ -142,7 +142,7 @@ std::string get_owner()
 	char hostname[HOST_NAME_MAX];
 	char loginname[LOGIN_NAME_MAX];
 
-#if _MSC_VER
+#if _WIN32 || _WIN64
 	DWORD hostname_len = HOST_NAME_MAX;
 	DWORD loginname_len = LOGIN_NAME_MAX;
 

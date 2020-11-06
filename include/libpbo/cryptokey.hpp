@@ -3,6 +3,9 @@
 #include <vector>
 #include <openssl/bn.h>
 
+#if _WIN32 || _WIN64
+#include <Windows.h>
+#else
 #define KEYSTATEBLOB				0xC
 #define OPAQUEKEYBLOB				0x9
 #define PLAINTEXTKEYBLOB			0x8
@@ -12,9 +15,6 @@
 #define SIMPLEBLOB					0x1
 #define SYMMETRICWRAPKEYBLOB		0xB
 
-#if _MSC_VER
-#include <Windows.h>
-#else
 #define CUR_BLOB_VERSION			0x2
 
 #define CALG_3DES					0x00006603
