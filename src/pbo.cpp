@@ -171,7 +171,7 @@ namespace PBO
 
 	void PBO::write(Entry *entry)
 	{
-		write(entry->get_path());
+		write(entry->get_path().string());
 		write(entry->get_packing_method());
 		write(entry->get_original_size());
 		write(entry->get_reserved());
