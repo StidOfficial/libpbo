@@ -317,7 +317,7 @@ namespace PBO
 		{
 			entry->set_data_offset(data_offset);
 
-			data_offset = data_offset + std::streamsize(entry->get_data_size());
+			data_offset = data_offset + std::streampos(entry->get_data_size());
 			leftDataLength = entry->get_data_size();
 
 			char signatureData[SIGNATURE_BUFFER_SIZE];
