@@ -47,13 +47,14 @@ else()
 endif()
 
 target_include_directories(pbo PUBLIC include PRIVATE include/libpbo)
-if(MSVC)
+if(MSVC OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	target_link_libraries(pbo OpenSSL::Crypto)
 
 	target_link_libraries(pboinfo pbo)
 	target_link_libraries(pbopack pbo)
 	target_link_libraries(pbounpack pbo)
 	target_link_libraries(pbocheck pbo)
+	target_link_libraries(pbocreatekey OpenSSL::Crypto pbo)
 
 	if(GTKMM_FOUND)
 		target_link_libraries(pbomanager pbo ${GTKMM_LIBRARIES})
@@ -76,7 +77,6 @@ if(GTKMM_FOUND)
 	execute_process(COMMAND glib-compile-resources --sourcedir ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/ --sourcedir ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/icons --target=${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/src/resources.cpp --generate-source ${CMAKE_CURRENT_SOURCE_DIR}/tools/pbomanager/res/images.gresource.xml)
 endif()
 
-target_link_libraries(pbocreatekey OpenSSL::Crypto pbo)
 target_link_libraries(pbosignfile OpenSSL::Crypto pbo)
 
 install(TARGETS pbo LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
