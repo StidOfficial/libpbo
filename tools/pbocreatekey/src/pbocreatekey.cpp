@@ -22,6 +22,10 @@ namespace std {
 #define LOGIN_NAME_MAX UNLEN + 1
 #else
 #include <unistd.h>
+#if __MACH__
+#define HOST_NAME_MAX _SC_HOST_NAME_MAX
+#define LOGIN_NAME_MAX _SC_LOGIN_NAME_MAX
+#endif
 #endif
 #include <openssl/md5.h>
 #include <libpbo/cryptokey.hpp>
