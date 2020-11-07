@@ -12,6 +12,11 @@ apt-get :
 apt-get install build-essential make cmake libstdc++6 libssl-dev libgtkmm-3.0-dev
 ```
 
+brew :
+```
+brew install cmake openssl gtkmm3
+```
+
 Visual Studio :
 
 Download and install OpenSSL library : https://github.com/openssl/openssl
