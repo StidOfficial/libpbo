@@ -1,8 +1,7 @@
 #include "compress.hpp"
 
 #include <stdexcept>
-
-#include <iostream>
+#include <cstdint>
 
 namespace PBO
 {
