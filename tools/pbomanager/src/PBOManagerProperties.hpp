@@ -1,6 +1,12 @@
 #pragma once
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
 #include <gtkmm.h>
+#ifdef __GNUC__
+#pragma GCC diagnostic warning "-Wold-style-cast"
+#endif
 #include <libpbo/pbo.hpp>
 
 class PBOManagerProperties : public Gtk::Window
