@@ -181,7 +181,7 @@ PBO::Entry *PBOManagerWindow::get_selected_entry()
 bool PBOManagerWindow::on_treeview_button_release_event(GdkEventButton *button_event)
 {
   if(button_event->button == 3 && get_selected_entry())
-    m_menuPopup.popup_at_pointer((GdkEvent*)button_event);
+    m_menuPopup.popup_at_pointer(reinterpret_cast<GdkEvent*>(button_event));
 
   return true;
 }
