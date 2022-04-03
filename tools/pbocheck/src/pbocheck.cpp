@@ -9,6 +9,7 @@ void usage();
 int main(int argc, char **argv)
 {
 	std::string directory_path;
+	bool signed_file = true;
 
 	for(int i = 1;i < argc; i++)
 	{
@@ -18,6 +19,8 @@ int main(int argc, char **argv)
 			usage();
 			return EXIT_SUCCESS;
 		}
+		else if(arg == "-us" || arg == "--unsigned")
+			signed_file = false;
 		else if(arg.find("--", 0, 2) == 0 || arg.find("-", 0, 1) == 0)
 		{
 			std::cerr << "pbocheck: invalid option « " << arg << " »" << std::endl;
@@ -51,19 +54,19 @@ int main(int argc, char **argv)
 	{
 		if(!std::filesystem::is_directory(i->status()) && i->path().extension() == ".pbo")
 		{
-			PBO::PBO pbo_file(i->path());
+			PBO::PBO pbo_file(i->path(), signed_file);
 
-            std::cout << "Check " << i->path().string();
-            try
-            {
-                pbo_file.unpack();
+			std::cout << "Check " << i->path().string();
+			try
+			{
+				pbo_file.unpack();
 
-                std::cout << " : OK (" << pbo_file.size() << ")" << std::endl;
-            }
-            catch(std::exception const &e)
-            {
-                std::cout << " : KO (" << e.what() << ")" << std::endl;
-            }
+				std::cout << " : OK (" << pbo_file.size() << ")" << std::endl;
+			}
+			catch(std::exception const &e)
+			{
+				std::cout << " : KO (" << e.what() << ")" << std::endl;
+			}
 		}
 	}
 
@@ -74,4 +77,5 @@ void usage()
 {
 	std::cout << "Usage: pbocheck [DIRECTORY]" << std::endl;
 	std::cout << "Options :" << std::endl;
+	std::cout << "\t-us, --unsigned\t\tSet unsigned file" << std::endl;
 }
