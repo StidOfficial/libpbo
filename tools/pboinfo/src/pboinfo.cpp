@@ -33,8 +33,7 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	PBO::PBO pbo_file(file_path);
-	pbo_file.signed_file(signed_file);
+	PBO::PBO pbo_file(file_path, signed_file);
 	try
 	{
 		pbo_file.unpack();
