@@ -23,7 +23,8 @@ Download and install OpenSSL library : https://github.com/openssl/openssl
 
 ## Build
 ```
-cmake CMakeLists.txt
+cmake . -Bbuild
+cd build
 make
 ```
 
