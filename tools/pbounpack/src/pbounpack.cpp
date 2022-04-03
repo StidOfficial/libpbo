@@ -14,6 +14,7 @@ int main(int argc, char **argv)
 	std::string pbo_file_path;
 	std::string product_name;
 	std::string product_version;
+	bool signed_file = true;
 
 	for(int i = 1; i < argc; i++)
 	{
@@ -23,6 +24,8 @@ int main(int argc, char **argv)
 			usage();
 			return EXIT_SUCCESS;
 		}
+		else if(arg == "-us" || arg == "--unsigned")
+			signed_file = false;
 		else if(arg.find("--", 0, 2) == 0 || arg.find("-", 0, 1) == 0)
 			std::cerr << "pbounpack: invalid option « " << arg << " »" << std::endl;
 		else
@@ -36,7 +39,7 @@ int main(int argc, char **argv)
 		return EXIT_SUCCESS;
 	}
 
-	PBO::PBO pbo_file(pbo_file_path);
+	PBO::PBO pbo_file(pbo_file_path, signed_file);
 	try
 	{
 		pbo_file.unpack();
@@ -89,4 +92,5 @@ int main(int argc, char **argv)
 void usage()
 {
     std::cout << "Usage: pbounpack [FILE]" << std::endl;
+    std::cout << "\t-us, --unsigned\t\tSet unsigned file" << std::endl;
 }
