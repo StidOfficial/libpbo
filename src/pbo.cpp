@@ -16,10 +16,12 @@ namespace PBO
 		open(file_path);
 	}
 
-	PBO::PBO(bool signed_file)
-		: std::vector<std::shared_ptr<Entry>>(), m_file()
+	PBO::PBO(bool signed_file) :
+		std::vector<std::shared_ptr<Entry>>(),
+		m_evp_md_context(nullptr),
+		m_signed(signed_file),
+		m_file()
 	{
-		m_signed = signed_file;
 	}
 
 	std::filesystem::path PBO::get_path()
@@ -73,8 +75,11 @@ namespace PBO
 		clear();
 
 		if(is_signed())
-			if(!SHA1_Init(&m_sha_context))
-				throw std::logic_error("Failed to intialize SHA1");
+		{
+			m_evp_md_context = EVP_MD_CTX_new();
+			if(!EVP_DigestInit(m_evp_md_context, EVP_sha1()))
+				throw std::logic_error("Failed to intialize EVP digest");
+		}
 
 		if(std::filesystem::is_directory(m_path))
 			throw std::logic_error(std::strerror(EISDIR));
@@ -158,7 +163,7 @@ namespace PBO
 		std::getline(m_file, text, '\0');
 
 		if(is_signed())
-			SHA1_Update(&m_sha_context, text.c_str(), text.size() + 1);
+			EVP_DigestUpdate(m_evp_md_context, text.c_str(), text.size() + 1);
 	}
 
 	void PBO::read(char *s, std::streamsize n)
@@ -166,7 +171,7 @@ namespace PBO
 		m_file.read(s, n);
 
 		if(is_signed())
-			SHA1_Update(&m_sha_context, s, static_cast<size_t>(n));
+			EVP_DigestUpdate(m_evp_md_context, s, static_cast<size_t>(n));
 	}
 
 	void PBO::write(Entry *entry)
@@ -225,7 +230,7 @@ namespace PBO
 		m_file.write(s, n);
 
 		if(is_signed())
-			SHA1_Update(&m_sha_context, s, static_cast<size_t>(n));
+			EVP_DigestUpdate(m_evp_md_context, s, static_cast<size_t>(n));
 	}
 
 	void PBO::pack()
@@ -271,7 +276,7 @@ namespace PBO
 
 		// Write data signature
 		char file_digest[SHA_DIGEST_LENGTH];
-		SHA1_Final(reinterpret_cast<unsigned char*>(&file_digest), &m_sha_context);
+		EVP_DigestFinal(m_evp_md_context, reinterpret_cast<unsigned char*>(&file_digest), nullptr);
 
 		m_file.write("\0", 1);
 		m_file.write(file_digest, sizeof(file_digest));
@@ -343,7 +348,7 @@ namespace PBO
 			set_signature(pbo_digest);
 
 			char file_digest[SHA_DIGEST_LENGTH];
-			SHA1_Final(reinterpret_cast<unsigned char*>(file_digest), &m_sha_context);
+			EVP_DigestFinal(m_evp_md_context, reinterpret_cast<unsigned char*>(file_digest), nullptr);
 
 			set_file_signature(file_digest);
 		}
@@ -357,7 +362,7 @@ namespace PBO
 	PBO::~PBO()
 	{
 		if(is_signed())
-			OPENSSL_cleanse(&m_sha_context, sizeof(m_sha_context));
+			EVP_MD_CTX_destroy(m_evp_md_context);
 
 		m_file.close();
 	}

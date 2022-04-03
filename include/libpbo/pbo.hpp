@@ -4,7 +4,7 @@
 #include <memory>
 #include <fstream>
 #include <openssl/sha.h>
-#include <openssl/crypto.h>
+#include <openssl/evp.h>
 #if __has_include(<filesystem>)
 #include <filesystem>
 #elif __has_include(<experimental/filesystem>)
@@ -38,7 +38,7 @@ namespace PBO
 		void pack();
 		void unpack();
 	private:
-		SHA_CTX m_sha_context;
+		EVP_MD_CTX *m_evp_md_context;
 		std::filesystem::path m_path;
 		bool m_signed;
 		std::fstream m_file;
